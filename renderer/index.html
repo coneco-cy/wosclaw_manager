@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" />
+  <title>WosClaw Manager</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ─── Sidebar ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🦞</div>
+        <div>
+          <div class="logo-text">WosClaw</div>
+          <div class="logo-sub">Manager</div>
+        </div>
+      </div>
+      <nav class="sidebar-steps">
+        <div class="step-item active" id="nav-0">
+          <div class="step-num"><span>1</span></div>
+          <div class="step-label">欢迎</div>
+        </div>
+        <div class="step-item" id="nav-1">
+          <div class="step-num"><span>2</span></div>
+          <div class="step-label">环境检查</div>
+        </div>
+        <div class="step-item" id="nav-2">
+          <div class="step-num"><span>3</span></div>
+          <div class="step-label">安装 OpenClaw</div>
+        </div>
+        <div class="step-item" id="nav-3">
+          <div class="step-num"><span>4</span></div>
+          <div class="step-label">配置 Provider</div>
+        </div>
+        <div class="step-item" id="nav-4">
+          <div class="step-num"><span>5</span></div>
+          <div class="step-label">配置 Model</div>
+        </div>
+        <div class="step-item" id="nav-5">
+          <div class="step-num"><span>6</span></div>
+          <div class="step-label">配置 Channel</div>
+        </div>
+        <div class="step-item" id="nav-6">
+          <div class="step-num"><span>7</span></div>
+          <div class="step-label">完成</div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ─── Main Content ───────────────────────────────────────────────── -->
+    <main class="main-content">
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 0: Welcome                                               -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page active" id="page-0">
+        <div class="welcome-hero">
+          <div class="welcome-logo">🦞</div>
+          <h1 class="welcome-title">WosClaw Manager</h1>
+          <p class="welcome-desc">
+            欢迎使用 WosClaw Manager！本向导将帮助您一步一步完成
+            OpenClaw 的安装与配置，让您快速上手 AI 助手。
+          </p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">🔍</span>
+              <span>自动检查运行环境</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📦</span>
+              <span>一键安装 OpenClaw</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⚙️</span>
+              <span>引导式配置向导</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">💬</span>
+              <span>支持飞书等多渠道</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg" id="btn-start">
+            开始安装配置 →
+          </button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 1: Environment Check                                     -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-1">
+        <div class="page-header">
+          <h2 class="page-title">🔍 环境检查</h2>
+          <p class="page-subtitle">检查运行 OpenClaw 所需的依赖环境是否已安装。</p>
+        </div>
+
+        <div id="env-list">
+          <div class="env-item">
+            <div class="env-icon checking">⏳</div>
+            <div class="env-info">
+              <div class="env-name">正在检查环境...</div>
+              <div class="env-desc">请稍候</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="env-alert" style="display:none;"></div>
+
+        <div id="env-install-section" style="display:none;">
+          <div class="divider"></div>
+          <div class="card">
+            <div class="card-title">📥 安装缺失依赖</div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+              检测到以下必要依赖未安装。请点击下方链接手动安装，安装完成后点击"重新检查"。
+            </p>
+            <div id="missing-deps-list"></div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="btn-env-back">← 返回</button>
+          <div class="action-bar-right">
+            <button class="btn btn-secondary" id="btn-env-recheck">🔄 重新检查</button>
+            <button class="btn btn-primary" id="btn-env-next" disabled>继续 →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 2: Install OpenClaw                                      -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-2">
+        <div class="page-header">
+          <h2 class="page-title">📦 安装 OpenClaw</h2>
+          <p class="page-subtitle">通过 npm 全局安装 OpenClaw 命令行工具。</p>
+        </div>
+
+        <div class="install-status" id="openclaw-status-card">
+          <div class="install-status-icon" id="openclaw-status-icon">⏳</div>
+          <div class="install-status-text">
+            <div class="install-status-title" id="openclaw-status-title">正在检查 OpenClaw...</div>
+            <div class="install-status-desc" id="openclaw-status-desc">请稍候</div>
+          </div>
+          <div id="openclaw-status-badge"></div>
+        </div>
+
+        <div id="install-log-section" style="display:none;">
+          <div class="card-title" style="margin-bottom:8px;">📋 安装日志</div>
+          <div class="terminal" id="install-log"></div>
+        </div>
+
+        <div id="install-error-section" style="display:none;">
+          <div class="alert alert-error">
+            <span class="alert-icon">❌</span>
+            <div id="install-error-msg"></div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="btn-install-back">← 返回</button>
+          <div class="action-bar-right">
+            <button class="btn btn-primary" id="btn-install-action" style="display:none;">
+              📥 安装 OpenClaw
+            </button>
+            <button class="btn btn-primary" id="btn-install-next" disabled>继续 →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 3: Configure Provider                                    -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-3">
+        <div class="page-header">
+          <h2 class="page-title">🤖 配置 AI Provider</h2>
+          <p class="page-subtitle">选择您要使用的 AI 服务提供商，并填写对应的 API 密钥。</p>
+        </div>
+
+        <!-- Config step indicator -->
+        <div class="config-step-indicator">
+          <div class="config-step-dot active" id="csi-provider">
+            <div class="dot">1</div>
+            <div class="dot-label">Provider</div>
+          </div>
+          <div class="config-step-line" id="csl-1"></div>
+          <div class="config-step-dot" id="csi-model">
+            <div class="dot">2</div>
+            <div class="dot-label">Model</div>
+          </div>
+          <div class="config-step-line" id="csl-2"></div>
+          <div class="config-step-dot" id="csi-channel">
+            <div class="dot">3</div>
+            <div class="dot-label">Channel</div>
+          </div>
+        </div>
+
+        <!-- Provider selection -->
+        <div class="provider-grid">
+          <div class="provider-card selected" data-provider="wosclaw" id="provider-wosclaw">
+            <div class="provider-icon">🌐</div>
+            <div class="provider-name">WosClaw</div>
+            <div class="provider-desc">MiniMax API</div>
+          </div>
+          <div class="provider-card" data-provider="anthropic" id="provider-anthropic">
+            <div class="provider-icon">🧠</div>
+            <div class="provider-name">Anthropic</div>
+            <div class="provider-desc">Claude 系列</div>
+          </div>
+          <div class="provider-card" data-provider="openai" id="provider-openai">
+            <div class="provider-icon">✨</div>
+            <div class="provider-name">OpenAI</div>
+            <div class="provider-desc">GPT 系列</div>
+          </div>
+        </div>
+
+        <!-- API Key input -->
+        <div class="form-group">
+          <label class="form-label">
+            API Key <span class="required">*</span>
+          </label>
+          <input
+            type="password"
+            class="form-input"
+            id="input-api-key"
+            placeholder="sk-..."
+            autocomplete="off"
+          />
+          <div class="form-hint" id="api-key-hint">
+            前往 <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;">wosclaw.ai</a> 获取您的 API Key
+          </div>
+        </div>
+
+        <!-- Instance name -->
+        <div class="form-group">
+          <label class="form-label">实例名称（可选）</label>
+          <input
+            type="text"
+            class="form-input"
+            id="input-profile-name"
+            placeholder="default"
+            autocomplete="off"
+          />
+          <div class="form-hint">为此 OpenClaw 实例起一个名字，留空则使用 "default"</div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="btn-provider-back">← 返回</button>
+          <button class="btn btn-primary" id="btn-provider-next">继续 →</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 4: Configure Model                                       -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-4">
+        <div class="page-header">
+          <h2 class="page-title">🎯 选择 AI 模型</h2>
+          <p class="page-subtitle">选择您希望使用的 AI 模型。不同模型在能力和速度上有所差异。</p>
+        </div>
+
+        <!-- Config step indicator -->
+        <div class="config-step-indicator">
+          <div class="config-step-dot done" id="csi-provider2">
+            <div class="dot">✓</div>
+            <div class="dot-label">Provider</div>
+          </div>
+          <div class="config-step-line done" id="csl-3"></div>
+          <div class="config-step-dot active" id="csi-model2">
+            <div class="dot">2</div>
+            <div class="dot-label">Model</div>
+          </div>
+          <div class="config-step-line" id="csl-4"></div>
+          <div class="config-step-dot" id="csi-channel2">
+            <div class="dot">3</div>
+            <div class="dot-label">Channel</div>
+          </div>
+        </div>
+
+        <div id="model-list" style="margin-bottom:16px;">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="btn-model-back">← 返回</button>
+          <button class="btn btn-primary" id="btn-model-next">继续 →</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 5: Configure Channel                                     -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-5">
+        <div class="page-header">
+          <h2 class="page-title">💬 配置消息渠道</h2>
+          <p class="page-subtitle">选择 OpenClaw 接收消息的渠道，并完成相应配置。</p>
+        </div>
+
+        <!-- Config step indicator -->
+        <div class="config-step-indicator">
+          <div class="config-step-dot done">
+            <div class="dot">✓</div>
+            <div class="dot-label">Provider</div>
+          </div>
+          <div class="config-step-line done"></div>
+          <div class="config-step-dot done">
+            <div class="dot">✓</div>
+            <div class="dot-label">Model</div>
+          </div>
+          <div class="config-step-line done"></div>
+          <div class="config-step-dot active">
+            <div class="dot">3</div>
+            <div class="dot-label">Channel</div>
+          </div>
+        </div>
+
+        <!-- Channel selection -->
+        <div class="channel-grid" style="margin-bottom:20px;">
+          <div class="channel-card selected" data-channel="feishu" id="channel-feishu">
+            <div class="channel-icon">🪶</div>
+            <div class="channel-info">
+              <div class="channel-name">飞书 (Feishu)</div>
+              <div class="channel-desc">企业即时通讯</div>
+            </div>
+          </div>
+          <div class="channel-card" data-channel="telegram" id="channel-telegram">
+            <div class="channel-icon">✈️</div>
+            <div class="channel-info">
+              <div class="channel-name">Telegram</div>
+              <div class="channel-desc">即时通讯机器人</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Feishu Config ── -->
+        <div id="feishu-config">
+          <div class="feishu-guide">
+            <div class="feishu-guide-title">📖 飞书配置指南</div>
+            <ol>
+              <li>前往 <a href="#" onclick="openFeishuPlatform()">飞书开放平台</a> 创建企业自建应用</li>
+              <li>在应用凭证页面获取 <strong>App ID</strong> 和 <strong>App Secret</strong></li>
+              <li>开启机器人能力，并配置消息事件订阅</li>
+              <li>将下方信息填入后点击继续</li>
+            </ol>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Feishu App ID <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              id="input-feishu-app-id"
+              placeholder="cli_xxxxxxxxxxxxxxxx"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Feishu App Secret <span class="required">*</span>
+            </label>
+            <input
+              type="password"
+              class="form-input"
+              id="input-feishu-app-secret"
+              placeholder="App Secret"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="alert alert-info">
+            <span class="alert-icon">ℹ️</span>
+            <div>
+              配置完成后，请在飞书开放平台 → 事件订阅 → 选择"使用 WebSocket 接收事件"并保存，
+              然后向机器人发送消息即可开始使用。
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Telegram Config ── -->
+        <div id="telegram-config" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">
+              Telegram Bot Token <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              id="input-bot-token"
+              placeholder="123456789:ABCdefGHIjklMNOpqrSTUvwxYZ"
+              autocomplete="off"
+            />
+            <div class="form-hint">
+              通过 <a href="#" onclick="openTelegramBotFather()" style="color:var(--accent);cursor:pointer;">@BotFather</a> 创建机器人并获取 Token
+            </div>
+          </div>
+        </div>
+
+        <div id="channel-error" class="alert alert-error" style="display:none;">
+          <span class="alert-icon">❌</span>
+          <div id="channel-error-msg"></div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="btn-channel-back">← 返回</button>
+          <button class="btn btn-primary" id="btn-channel-next">开始部署 🚀</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 5b: Deploying (progress)                                 -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-5b">
+        <div class="page-header">
+          <h2 class="page-title">🚀 正在部署</h2>
+          <p class="page-subtitle">正在写入配置并启动 OpenClaw，请稍候...</p>
+        </div>
+
+        <div class="install-status" id="deploy-status-card">
+          <div class="install-status-icon" id="deploy-status-icon">⚙️</div>
+          <div class="install-status-text">
+            <div class="install-status-title" id="deploy-status-title">准备中...</div>
+            <div class="install-status-desc" id="deploy-status-desc">正在初始化配置</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--text-muted);">部署进度</span>
+            <span style="font-size:12px;font-weight:600;color:var(--accent);" id="deploy-pct">0%</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar" id="deploy-progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-bottom:8px;margin-top:16px;">📋 部署日志</div>
+        <div class="terminal" id="deploy-log" style="max-height:260px;"></div>
+
+        <div id="deploy-error-section" style="display:none;margin-top:16px;">
+          <div class="alert alert-error">
+            <span class="alert-icon">❌</span>
+            <div id="deploy-error-msg"></div>
+          </div>
+          <div class="action-bar" style="border-top:none;padding-top:0;margin-top:16px;">
+            <button class="btn btn-secondary" id="btn-deploy-back">← 返回修改</button>
+            <button class="btn btn-primary" id="btn-deploy-retry">🔄 重试</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- Page 6: Complete                                              -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <section class="page" id="page-6">
+        <div class="success-hero">
+          <div class="success-icon">✅</div>
+          <h2 class="success-title">配置完成！</h2>
+          <p class="success-desc">
+            OpenClaw 已成功安装并配置完毕。您现在可以通过所选渠道与 AI 助手对话了。
+          </p>
+
+          <div class="config-summary" id="config-summary">
+            <div class="config-summary-title">配置摘要</div>
+            <div class="config-summary-item">
+              <span class="key">实例名称</span>
+              <span class="value" id="summary-profile">default</span>
+            </div>
+            <div class="config-summary-item">
+              <span class="key">Provider</span>
+              <span class="value" id="summary-provider">WosClaw</span>
+            </div>
+            <div class="config-summary-item">
+              <span class="key">模型</span>
+              <span class="value" id="summary-model">-</span>
+            </div>
+            <div class="config-summary-item">
+              <span class="key">渠道</span>
+              <span class="value" id="summary-channel">飞书</span>
+            </div>
+            <div class="config-summary-item">
+              <span class="key">网关端口</span>
+              <span class="value" id="summary-port">28789</span>
+            </div>
+          </div>
+
+          <!-- Feishu post-setup instructions -->
+          <div id="feishu-post-setup" class="alert alert-info" style="max-width:480px;text-align:left;">
+            <span class="alert-icon">🪶</span>
+            <div>
+              <strong>飞书后续步骤：</strong><br/>
+              前往飞书开放平台 → 事件订阅 → 选择"使用 WebSocket 接收事件"并保存。
+              然后向机器人发送消息即可开始使用！
+            </div>
+          </div>
+
+          <!-- Telegram post-setup instructions -->
+          <div id="telegram-post-setup" class="alert alert-info" style="max-width:480px;text-align:left;display:none;">
+            <span class="alert-icon">✈️</span>
+            <div>
+              <strong>Telegram 后续步骤：</strong><br/>
+              直接向您的 Telegram 机器人发送消息即可开始使用！
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn btn-secondary" id="btn-open-config">📁 打开配置目录</button>
+            <button class="btn btn-primary" id="btn-finish">完成 ✓</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+  // ─── State ────────────────────────────────────────────────────────────────
+  const STATE = {
+    currentPage: 0,
+    envResults: [],
+    openclawInstalled: false,
+    openclawVersion: null,
+    provider: 'wosclaw',
+    apiKey: '',
+    profileName: 'default',
+    modelId: 'claude-opus-4-6',
+    modelName: 'Claude Opus 4.6',
+    channel: 'feishu',
+    feishuAppId: '',
+    feishuAppSecret: '',
+    botToken: '',
+    deployedPort: 28789,
+  };
+
+  const MODEL_CATALOG = [
+    { id: 'claude-opus-4-6',          name: 'Claude Opus 4.6',   desc: '最强能力，适合复杂任务' },
+    { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5',   desc: '强大能力，均衡选择' },
+    { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5', desc: '速度与能力的平衡' },
+    { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5', desc: '快速响应，轻量任务' },
+    { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4',   desc: '稳定可靠' },
+    { id: 'minimax-free',             name: 'MiniMax 2.5',       desc: '免费使用' },
+  ];
+
+  const PROVIDER_INFO = {
+    wosclaw:   { name: 'WosClaw',   url: 'https://wosclaw.ai',          hint: '前往 wosclaw.ai 获取您的 API Key' },
+    anthropic: { name: 'Anthropic', url: 'https://console.anthropic.com', hint: '前往 Anthropic Console 获取 API Key' },
+    openai:    { name: 'OpenAI',    url: 'https://platform.openai.com',  hint: '前往 OpenAI Platform 获取 API Key' },
+  };
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+
+  function showPage(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = $('page-' + n);
+    if (page) page.classList.add('active');
+
+    // Update sidebar
+    document.querySelectorAll('.step-item').forEach((item, i) => {
+      item.classList.remove('active', 'completed');
+      if (i < n) item.classList.add('completed');
+      else if (i === n) item.classList.add('active');
+    });
+
+    STATE.currentPage = n;
+  }
+
+  function appendLog(terminalId, text, type) {
+    const el = $(terminalId);
+    if (!el) return;
+    const span = document.createElement('span');
+    span.className = 'log-' + (type || 'stdout');
+    span.textContent = text;
+    el.appendChild(span);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function clearLog(terminalId) {
+    const el = $(terminalId);
+    if (el) el.innerHTML = '';
+  }
+
+  function openFeishuPlatform() {
+    window.electronAPI.openUrl('https://open.feishu.cn/app');
+  }
+
+  function openTelegramBotFather() {
+    window.electronAPI.openUrl('https://t.me/BotFather');
+  }
+
+  // ─── Page 0: Welcome ──────────────────────────────────────────────────────
+  $('btn-start').addEventListener('click', () => {
+    showPage(1);
+    runEnvCheck();
+  });
+
+  // ─── Page 1: Environment Check ────────────────────────────────────────────
+  async function runEnvCheck() {
+    $('env-list').innerHTML = `
+      <div class="env-item">
+        <div class="env-icon checking">⏳</div>
+        <div class="env-info">
+          <div class="env-name">正在检查环境...</div>
+          <div class="env-desc">请稍候</div>
+        </div>
+      </div>`;
+    $('env-alert').style.display = 'none';
+    $('env-install-section').style.display = 'none';
+    $('btn-env-next').disabled = true;
+
+    const results = await window.electronAPI.checkEnvironment();
+    STATE.envResults = results;
+    renderEnvResults(results);
+  }
+
+  function renderEnvResults(results) {
+    const allRequired = results.filter(r => r.required);
+    const allOk = allRequired.every(r => r.installed);
+    const missing = results.filter(r => r.required && !r.installed);
+
+    let html = '';
+    for (const r of results) {
+      let iconClass, statusClass, statusText, icon;
+      if (r.installed) {
+        iconClass = 'ok'; statusClass = 'ok';
+        statusText = r.version ? `v${r.version}` : '已安装';
+        icon = '✅';
+      } else if (r.required) {
+        iconClass = 'missing'; statusClass = 'missing';
+        statusText = '未安装';
+        icon = '❌';
+      } else {
+        iconClass = 'optional'; statusClass = 'optional';
+        statusText = '未安装（可选）';
+        icon = '⚠️';
+      }
+
+      html += `
+        <div class="env-item">
+          <div class="env-icon ${iconClass}">${icon}</div>
+          <div class="env-info">
+            <div class="env-name">${r.name}</div>
+            <div class="env-desc">${r.description}</div>
+          </div>
+          <div class="env-status ${statusClass}">
+            <div class="status-dot ${statusClass}"></div>
+            ${statusText}
+          </div>
+        </div>`;
+    }
+    $('env-list').innerHTML = html;
+
+    if (allOk) {
+      $('env-alert').style.display = 'flex';
+      $('env-alert').className = 'alert alert-success';
+      $('env-alert').innerHTML = '<span class="alert-icon">✅</span><div>所有必要依赖已安装，可以继续。</div>';
+      $('btn-env-next').disabled = false;
+    } else {
+      $('env-alert').style.display = 'none';
+      $('env-install-section').style.display = 'block';
+
+      let depsHtml = '';
+      for (const r of missing) {
+        depsHtml += `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">${r.name}</div>
+              <div style="font-size:12px;color:var(--text-muted);">${r.description}</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="window.electronAPI.openUrl('${r.installUrl}')">
+              下载安装
+            </button>
+          </div>`;
+      }
+      $('missing-deps-list').innerHTML = depsHtml;
+    }
+  }
+
+  $('btn-env-back').addEventListener('click', () => showPage(0));
+  $('btn-env-recheck').addEventListener('click', runEnvCheck);
+  $('btn-env-next').addEventListener('click', () => {
+    showPage(2);
+    checkOpenclawInstall();
+  });
+
+  // ─── Page 2: Install OpenClaw ─────────────────────────────────────────────
+  async function checkOpenclawInstall() {
+    $('openclaw-status-icon').textContent = '⏳';
+    $('openclaw-status-title').textContent = '正在检查 OpenClaw...';
+    $('openclaw-status-desc').textContent = '请稍候';
+    $('openclaw-status-badge').innerHTML = '';
+    $('install-log-section').style.display = 'none';
+    $('install-error-section').style.display = 'none';
+    $('btn-install-action').style.display = 'none';
+    $('btn-install-next').disabled = true;
+
+    const result = await window.electronAPI.checkOpenclaw();
+
+    if (result.installed) {
+      STATE.openclawInstalled = true;
+      STATE.openclawVersion = result.version;
+      $('openclaw-status-icon').textContent = '✅';
+      $('openclaw-status-title').textContent = 'OpenClaw 已安装';
+      $('openclaw-status-desc').textContent = result.version ? `版本: ${result.version}` : '已就绪';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">已安装</span>';
+      $('btn-install-next').disabled = false;
+    } else {
+      STATE.openclawInstalled = false;
+      $('openclaw-status-icon').textContent = '📦';
+      $('openclaw-status-title').textContent = 'OpenClaw 未安装';
+      $('openclaw-status-desc').textContent = '点击右侧按钮通过 npm 安装';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-error">未安装</span>';
+      $('btn-install-action').style.display = 'inline-flex';
+    }
+  }
+
+  $('btn-install-back').addEventListener('click', () => showPage(1));
+
+  $('btn-install-action').addEventListener('click', async () => {
+    $('btn-install-action').disabled = true;
+    $('btn-install-action').innerHTML = '<span class="spinner"></span> 安装中...';
+    $('install-log-section').style.display = 'block';
+    $('install-error-section').style.display = 'none';
+    clearLog('install-log');
+
+    appendLog('install-log', '> npm install -g openclaw@latest\n', 'info');
+
+    // Listen for command output
+    window.electronAPI.onCommandOutput((data) => {
+      appendLog('install-log', data.text, data.type);
+    });
+
+    const result = await window.electronAPI.installOpenclaw();
+    window.electronAPI.removeCommandOutputListener();
+
+    if (result.success) {
+      appendLog('install-log', '\n✅ OpenClaw 安装成功！\n', 'success');
+      $('openclaw-status-icon').textContent = '✅';
+      $('openclaw-status-title').textContent = 'OpenClaw 安装成功';
+      $('openclaw-status-desc').textContent = '已准备好进行配置';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">已安装</span>';
+      $('btn-install-action').style.display = 'none';
+      $('btn-install-next').disabled = false;
+    } else {
+      appendLog('install-log', '\n❌ 安装失败: ' + result.error + '\n', 'error');
+      $('install-error-section').style.display = 'block';
+      $('install-error-msg').textContent = result.error || '安装失败，请检查网络连接或以管理员身份运行。';
+      $('btn-install-action').disabled = false;
+      $('btn-install-action').innerHTML = '📥 重试安装';
+    }
+  });
+
+  $('btn-install-next').addEventListener('click', () => {
+    showPage(3);
+  });
+
+  // ─── Page 3: Configure Provider ───────────────────────────────────────────
+  document.querySelectorAll('.provider-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      STATE.provider = card.dataset.provider;
+      updateProviderHint();
+    });
+  });
+
+  function updateProviderHint() {
+    const info = PROVIDER_INFO[STATE.provider] || PROVIDER_INFO.wosclaw;
+    $('api-key-hint').innerHTML = `前往 <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;" onclick="window.electronAPI.openUrl('${info.url}')">${info.url.replace('https://', '')}</a> 获取您的 API Key`;
+  }
+
+  $('btn-provider-back').addEventListener('click', () => showPage(2));
+
+  $('btn-provider-next').addEventListener('click', () => {
+    const apiKey = $('input-api-key').value.trim();
+    if (!apiKey) {
+      $('input-api-key').focus();
+      $('input-api-key').style.borderColor = 'var(--error)';
+      setTimeout(() => { $('input-api-key').style.borderColor = ''; }, 2000);
+      return;
+    }
+    STATE.apiKey = apiKey;
+    STATE.profileName = $('input-profile-name').value.trim() || 'default';
+    showPage(4);
+    renderModelList();
+  });
+
+  // ─── Page 4: Configure Model ──────────────────────────────────────────────
+  function renderModelList() {
+    let html = '';
+    for (const m of MODEL_CATALOG) {
+      const selected = m.id === STATE.modelId ? 'selected' : '';
+      html += `
+        <div class="provider-card ${selected}" data-model-id="${m.id}" style="text-align:left;display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:8px;">
+          <div style="flex:1;">
+            <div class="provider-name">${m.name}</div>
+            <div class="provider-desc">${m.desc}</div>
+          </div>
+          ${selected ? '<span style="color:var(--success);font-size:18px;">✓</span>' : ''}
+        </div>`;
+    }
+    $('model-list').innerHTML = html;
+
+    document.querySelectorAll('[data-model-id]').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('[data-model-id]').forEach(c => {
+          c.classList.remove('selected');
+          c.querySelector('span') && c.querySelector('span').remove();
+        });
+        card.classList.add('selected');
+        const tick = document.createElement('span');
+        tick.style.cssText = 'color:var(--success);font-size:18px;';
+        tick.textContent = '✓';
+        card.appendChild(tick);
+        STATE.modelId = card.dataset.modelId;
+        const found = MODEL_CATALOG.find(m => m.id === STATE.modelId);
+        STATE.modelName = found ? found.name : STATE.modelId;
+      });
+    });
+  }
+
+  $('btn-model-back').addEventListener('click', () => showPage(3));
+  $('btn-model-next').addEventListener('click', () => showPage(5));
+
+  // ─── Page 5: Configure Channel ────────────────────────────────────────────
+  document.querySelectorAll('.channel-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      STATE.channel = card.dataset.channel;
+      updateChannelForm();
+    });
+  });
+
+  function updateChannelForm() {
+    if (STATE.channel === 'feishu') {
+      $('feishu-config').style.display = 'block';
+      $('telegram-config').style.display = 'none';
+    } else {
+      $('feishu-config').style.display = 'none';
+      $('telegram-config').style.display = 'block';
+    }
+    $('channel-error').style.display = 'none';
+  }
+
+  $('btn-channel-back').addEventListener('click', () => showPage(4));
+
+  $('btn-channel-next').addEventListener('click', () => {
+    $('channel-error').style.display = 'none';
+
+    if (STATE.channel === 'feishu') {
+      const appId = $('input-feishu-app-id').value.trim();
+      const appSecret = $('input-feishu-app-secret').value.trim();
+      if (!appId || !appSecret) {
+        $('channel-error').style.display = 'flex';
+        $('channel-error-msg').textContent = '请填写飞书 App ID 和 App Secret';
+        return;
+      }
+      STATE.feishuAppId = appId;
+      STATE.feishuAppSecret = appSecret;
+    } else if (STATE.channel === 'telegram') {
+      const token = $('input-bot-token').value.trim();
+      if (!token) {
+        $('channel-error').style.display = 'flex';
+        $('channel-error-msg').textContent = '请填写 Telegram Bot Token';
+        return;
+      }
+      STATE.botToken = token;
+    }
+
+    startDeploy();
+  });
+
+  // ─── Deploy ───────────────────────────────────────────────────────────────
+  async function startDeploy() {
+    showPage('5b');
+    $('deploy-error-section').style.display = 'none';
+    clearLog('deploy-log');
+    $('deploy-progress-bar').style.width = '0%';
+    $('deploy-pct').textContent = '0%';
+    $('deploy-status-icon').textContent = '⚙️';
+    $('deploy-status-title').textContent = '正在部署...';
+    $('deploy-status-desc').textContent = '初始化配置';
+
+    function updateProgress(pct, msg) {
+      $('deploy-progress-bar').style.width = pct + '%';
+      $('deploy-pct').textContent = pct + '%';
+      $('deploy-status-desc').textContent = msg;
+      appendLog('deploy-log', `[${pct}%] ${msg}\n`, 'info');
+    }
+
+    try {
+      updateProgress(5, '创建配置目录...');
+
+      // Build config
+      const { writeOpenclawConfig } = await buildAndWriteConfig(updateProgress);
+
+      updateProgress(100, '部署完成！');
+      $('deploy-status-icon').textContent = '✅';
+      $('deploy-status-title').textContent = '部署成功';
+      $('deploy-status-desc').textContent = 'OpenClaw 已配置完毕';
+
+      // Show success page after short delay
+      setTimeout(() => {
+        showSuccessPage();
+      }, 1200);
+
+    } catch (err) {
+      $('deploy-status-icon').textContent = '❌';
+      $('deploy-status-title').textContent = '部署失败';
+      $('deploy-status-desc').textContent = err.message;
+      $('deploy-error-section').style.display = 'block';
+      $('deploy-error-msg').textContent = err.message;
+      appendLog('deploy-log', '\n❌ 错误: ' + err.message + '\n', 'error');
+    }
+  }
+
+  async function buildAndWriteConfig(onProgress) {
+    const BASE_PORT = 28789;
+
+    onProgress(10, '生成配置文件...');
+
+    const model = MODEL_CATALOG.find(m => m.id === STATE.modelId) || MODEL_CATALOG[0];
+
+    const config = {
+      models: {
+        providers: {
+          anthropic: {
+            api: 'anthropic-messages',
+            baseUrl: 'https://api.minimaxi.com/anthropic',
+            apiKey: STATE.apiKey,
+            models: [{
+              id: model.id,
+              name: model.name,
+              reasoning: false,
+              input: ['text'],
+              cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+              contextWindow: 200000,
+              maxTokens: 8192,
+            }],
+          },
+        },
+      },
+      agents: {
+        defaults: {
+          model: { primary: 'anthropic/' + model.id },
+        },
+      },
+      gateway: { port: BASE_PORT },
+    };
+
+    if (STATE.channel === 'feishu') {
+      config.channels = {
+        feishu: {
+          enabled: true,
+          dmPolicy: 'pairing',
+          groupPolicy: 'open',
+          requireMention: true,
+          accounts: {
+            main: {
+              appId: STATE.feishuAppId,
+              appSecret: STATE.feishuAppSecret,
+            },
+          },
+        },
+      };
+      config.plugins = { entries: { feishu: { enabled: true } } };
+    } else if (STATE.channel === 'telegram') {
+      config.channels = {
+        telegram: {
+          enabled: true,
+          botToken: STATE.botToken,
+          dmPolicy: 'pairing',
+          groups: { '*': { requireMention: true } },
+        },
+      };
+      config.plugins = { entries: { telegram: { enabled: true } } };
+    }
+
+    onProgress(30, '写入配置文件...');
+
+    // Write config to ~/.openclaw/openclaw.json (or profile-specific path)
+    const homeDir = await window.electronAPI.getHomeDir();
+    const profileSuffix = STATE.profileName === 'default' ? '' : '-' + STATE.profileName;
+    const configDir = homeDir + '\\.openclaw' + profileSuffix;
+    const configFile = configDir + '\\openclaw.json';
+
+    // Use the save config IPC handler
+    const saveResult = await window.electronAPI.saveOpenclawConfig(config);
+    if (!saveResult.success) {
+      throw new Error('写入配置失败: ' + saveResult.error);
+    }
+
+    onProgress(50, '运行 openclaw onboard...');
+
+    // Listen for command output
+    window.electronAPI.onCommandOutput((data) => {
+      appendLog('deploy-log', data.text, data.type === 'stderr' ? 'stderr' : 'stdout');
+    });
+
+    // Run openclaw onboard
+    const profileArgs = STATE.profileName === 'default' ? [] : ['--profile', STATE.profileName];
+    const onboardArgs = [
+      ...profileArgs,
+      'onboard',
+      '--install-daemon',
+      '--flow', 'quickstart',
+      '--accept-risk',
+      '--skip-skills',
+      '--skip-channels',
+      '--skip-ui',
+      '--skip-health',
+      '--non-interactive',
+      '--gateway-port', String(BASE_PORT),
+    ];
+
+    const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs.slice(1)); // pass args after 'onboard'
+
+    window.electronAPI.removeCommandOutputListener();
+
+    onProgress(85, '应用最终配置...');
+
+    // Re-save config to ensure channel settings are applied
+    const finalSave = await window.electronAPI.saveOpenclawConfig(config);
+
+    onProgress(92, '重启网关...');
+
+    // Try to restart gateway
+    try {
+      await window.electronAPI.runOpenclawConfig('gateway', 'restart');
+    } catch (e) {
+      // Non-fatal
+      appendLog('deploy-log', '警告: 网关重启失败，可能需要手动启动\n', 'stderr');
+    }
+
+    STATE.deployedPort = BASE_PORT;
+    return { success: true };
+  }
+
+  function showSuccessPage() {
+    showPage(6);
+    $('summary-profile').textContent = STATE.profileName;
+    $('summary-provider').textContent = PROVIDER_INFO[STATE.provider]?.name || STATE.provider;
+    $('summary-model').textContent = STATE.modelName;
+    $('summary-channel').textContent = STATE.channel === 'feishu' ? '飞书 (Feishu)' : 'Telegram';
+    $('summary-port').textContent = STATE.deployedPort;
+
+    if (STATE.channel === 'feishu') {
+      $('feishu-post-setup').style.display = 'flex';
+      $('telegram-post-setup').style.display = 'none';
+    } else {
+      $('feishu-post-setup').style.display = 'none';
+      $('telegram-post-setup').style.display = 'flex';
+    }
+  }
+
+  // ─── Deploy error handlers ────────────────────────────────────────────────
+  $('btn-deploy-back').addEventListener('click', () => showPage(5));
+  $('btn-deploy-retry').addEventListener('click', startDeploy);
+
+  // ─── Page 6: Complete ─────────────────────────────────────────────────────
+  $('btn-open-config').addEventListener('click', async () => {
+    const homeDir = await window.electronAPI.getHomeDir();
+    const profileSuffix = STATE.profileName === 'default' ? '' : '-' + STATE.profileName;
+    const configDir = homeDir + '\\.openclaw' + profileSuffix;
+    await window.electronAPI.openPath(configDir);
+  });
+
+  $('btn-finish').addEventListener('click', () => {
+    // Reset to welcome page for another instance
+    showPage(0);
+  });
+
+  // ─── Init ─────────────────────────────────────────────────────────────────
+  updateProviderHint();
+  updateChannelForm();
+  </script>
+</body>
+</html>

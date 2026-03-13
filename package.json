@@ -1,0 +1,72 @@
+{
+  "name": "wosclaw-manager",
+  "version": "1.0.0",
+  "description": "WosClaw Manager - A Windows desktop app to install and configure OpenClaw",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win --x64 --arm64",
+    "build:x64": "electron-builder --win --x64",
+    "build:arm64": "electron-builder --win --arm64",
+    "build:all": "electron-builder --win --x64 --arm64",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "openclaw",
+    "electron",
+    "windows",
+    "manager"
+  ],
+  "author": "WosClaw Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "node-pty": "^1.0.0"
+  },
+  "build": {
+    "appId": "com.wosclaw.manager",
+    "productName": "WosClaw Manager",
+    "copyright": "Copyright © 2025 WosClaw Team",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-${version}-Windows-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WosClaw Manager",
+      "artifactName": "${productName}-${version}-Setup-${arch}.${ext}"
+    }
+  }
+}
