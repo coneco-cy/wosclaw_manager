@@ -7,6 +7,7 @@ const os = require('os');
 let mainWindow;
 
 function createWindow() {
+  const iconPath = path.join(__dirname, 'assets', 'icon.ico');
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -18,6 +19,7 @@ function createWindow() {
       nodeIntegration: false,
     },
     title: 'WosClaw Manager',
+    icon: iconPath,
     show: false,
     backgroundColor: '#0f172a',
   });
