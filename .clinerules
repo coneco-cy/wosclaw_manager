@@ -1,0 +1,246 @@
+# Skill: Build an Electron Windows App for CLI Tool Installation & Configuration
+
+## 描述
+
+本 Skill 记录了从零构建 **WosClaw Manager** Electron 桌面应用的完整过程。该应用的功能是：
+- 一键检查并安装运行环境（Node.js、npm、Git）
+- 通过 npm 安装 OpenClaw CLI 工具
+- 引导用户逐步配置 AI Provider、Model、Channel（以飞书为例）
+- 将配置写入 `~/.openclaw/openclaw.json` 并初始化服务
+
+---
+
+## 会话过程记录
+
+### 阶段一：分析参考项目
+
+**目标**：理解 `openclaw-manager` 的功能，作为 Electron 应用的功能参考。
+
+**关键文件**：
+- `bin/setup.js` — 环境检查与安装逻辑
+- `lib/install.js` — npm 安装 openclaw 的实现
+- `lib/configure.js` — 配置文件生成逻辑（provider、model、channel）
+- `lib/server.js` — 本地 HTTP 服务器，提供 Web 配置界面
+- `public/index.html` — Web 配置向导 UI
+
+**结论**：原项目是 Node.js CLI + 本地 Web 服务器的方案，需要改造为 Electron 桌面应用。
+
+---
+
+### 阶段二：设计 Electron 应用架构
+
+**技术选型**：
+- **框架**：Electron（Main Process + Renderer Process 双进程架构）
+- **打包**：electron-builder（支持 x64/arm64 交叉编译）
+- **UI**：原生 HTML/CSS/JS（无框架，减少依赖）
+- **IPC**：`contextBridge` + `ipcMain.handle` / `ipcRenderer.invoke`
+
+**文件结构**：
+```
+wosclaw-manager/
+├── main.js          # Main Process：窗口管理、IPC Handler、子进程执行
+├── preload.js       # Context Bridge：安全暴露 API 给渲染进程
+├── package.json     # 项目配置 + electron-builder 打包配置
+├── assets/
+│   └── icon.ico     # 应用图标（由 JPG 转换）
+└── renderer/
+    ├── index.html   # 完整的 7 步向导 UI
+    ├── styles.css   # 深色主题样式
+    └── wosclaw.jpg  # 品牌图片
+```
+
+---
+
+### 阶段三：实现各功能模块
+
+#### 3.1 环境检查（Step 2）
+
+**实现方式**：在 `main.js` 中通过 `child_process.exec` 执行 `where <cmd>`（Windows）检测命令是否存在，用正则提取版本号。
+
+```javascript
+// main.js
+function checkCommand(cmd) {
+  return new Promise((resolve) => {
+    exec(process.platform === 'win32' ? 'where ' + cmd : 'which ' + cmd, (err, stdout) => {
+      resolve(!err && stdout.trim().length > 0);
+    });
+  });
+}
+```
+
+**IPC Channel**：`check-environment` → 返回 `Array<{name, required, installed, version, installUrl, description}>`
+
+#### 3.2 安装 OpenClaw（Step 3）
+
+**实现方式**：使用 `child_process.spawn`（非 `exec`）执行 `npm install -g openclaw@latest`，通过 `proc.stdout.on('data')` 实时将输出推送到渲染进程。
+
+```javascript
+// main.js
+proc.stdout.on('data', (data) => {
+  mainWindow.webContents.send('command-output', { type: 'stdout', text: data.toString() });
+});
+```
+
+**渲染进程**通过 `ipcRenderer.on('command-output', cb)` 监听并追加到终端 UI。
+
+#### 3.3 配置向导（Steps 4-6）
+
+**状态管理**：所有用户输入存储在渲染进程的全局 `STATE` 对象中：
+```javascript
+const STATE = {
+  provider: 'wosclaw', apiKey: '', profileName: 'default',
+  modelId: 'claude-opus-4-6', channel: 'feishu',
+  feishuAppId: '', feishuAppSecret: '', botToken: '',
+};
+```
+
+**Provider 选择**：卡片点击 → 更新 `STATE.provider` + 动态更新 API Key 获取链接。
+
+**Model 选择**：由 `MODEL_CATALOG` 数组驱动，动态渲染卡片列表。
+
+**Channel 配置**：条件渲染（飞书/Telegram），表单验证后进入部署。
+
+#### 3.4 部署流程（Step 7）
+
+**4 个阶段**：
+1. 生成 `openclaw.json` 配置对象（含 models/agents/gateway/channels/plugins）
+2. 通过 IPC 写入 `~/.openclaw/openclaw.json`（`fs.writeFileSync`）
+3. 执行 `openclaw onboard --non-interactive --skip-channels ...`
+4. 执行 `openclaw gateway restart`（非致命，失败仅记录警告）
+
+**进度条**：手动设定各阶段百分比（5% → 10% → 30% → 50% → 85% → 92% → 100%），CSS `transition` 实现平滑动画。
+
+---
+
+### 阶段四：打包配置
+
+**electron-builder 配置**（`package.json` 的 `build` 字段）：
+
+```json
+{
+  "win": {
+    "target": [
+      { "target": "nsis", "arch": ["x64", "arm64"] },
+      { "target": "zip",  "arch": ["x64", "arm64"] }
+    ],
+    "artifactName": "${productName}-${version}-Windows-${arch}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true
+  }
+}
+```
+
+**npm scripts**：
+- `npm run build:x64` — 仅打包 x64
+- `npm run build:arm64` — 仅打包 arm64
+- `npm run build:all` — 同时打包两种架构
+
+**多架构原理**：electron-builder 自动下载对应架构的 Electron 预编译二进制，无需 ARM 设备即可交叉编译 arm64 包。
+
+---
+
+### 阶段五：图标设置
+
+**问题**：需要将用户提供的 JPG 图片转换为 Windows ICO 格式。
+
+**解决方案**：使用 PowerShell + .NET `System.Drawing` 进行转换：
+
+```powershell
+Add-Type -AssemblyName System.Drawing
+$img = [System.Drawing.Image]::FromFile($src)
+$bmp = New-Object System.Drawing.Bitmap(256, 256)
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$g.DrawImage($img, 0, 0, 256, 256)
+$g.Dispose()
+$hicon = $bmp.GetHicon()
+$icon = [System.Drawing.Icon]::FromHandle($hicon)
+$fs = [System.IO.File]::OpenWrite($dst)
+$icon.Save($fs)
+$fs.Close()
+```
+
+**应用图标**：
+- `main.js` 的 `BrowserWindow` 中设置 `icon: path.join(__dirname, 'assets', 'icon.ico')`
+- `package.json` 的 `build.win.icon` 指向同一文件
+
+**UI 内部图片**：将 JPG 复制到 `renderer/wosclaw.jpg`，在 HTML 中用 `<img>` 替换原有 emoji，CSS 设置 `object-fit: cover` + `border-radius`。
+
+---
+
+### 阶段六：Git 初始化
+
+```bash
+git init
+git add .
+git commit -m "feat: initial commit - WosClaw Manager Electron app"
+# 后续提交：
+git commit -m "feat: add wosclaw icon and set window icon"
+git commit -m "feat: replace emoji logo with wosclaw.jpg in sidebar and welcome page"
+```
+
+`.gitignore` 排除：`node_modules/`、`dist/`、`*.log`、`.env`
+
+---
+
+## 关键技术要点
+
+### Electron 安全模型
+- `contextIsolation: true` + `nodeIntegration: false`：渲染进程无法直接访问 Node.js
+- `contextBridge.exposeInMainWorld`：唯一安全的 API 暴露方式
+- CSP Header：防止 XSS
+
+### spawn vs exec
+- `exec`：适合短命令，缓冲全部输出后返回
+- `spawn`：适合长时间运行的命令（如 npm install），支持流式实时输出
+
+### Windows 路径处理
+- 使用 `path.join()` 而非字符串拼接
+- 配置文件路径：`os.homedir()` + `.openclaw` + 可选 profile 后缀
+
+### 多实例支持
+- 通过 `profileName` 区分实例
+- `default` → `~/.openclaw/`
+- 自定义名称 → `~/.openclaw-<name>/`
+
+---
+
+## 可复用的代码片段
+
+### IPC Handler 模板
+```javascript
+// main.js
+ipcMain.handle('channel-name', async (event, ...args) => {
+  try {
+    // 执行操作
+    return { success: true, data: result };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+```
+
+### preload.js 模板
+```javascript
+const { contextBridge, ipcRenderer } = require('electron');
+contextBridge.exposeInMainWorld('electronAPI', {
+  myAction: (...args) => ipcRenderer.invoke('channel-name', ...args),
+  onEvent: (cb) => ipcRenderer.on('event-name', (_, data) => cb(data)),
+  removeEventListener: () => ipcRenderer.removeAllListeners('event-name'),
+});
+```
+
+### 实时命令输出
+```javascript
+// main.js - 发送
+proc.stdout.on('data', (data) => {
+  mainWindow.webContents.send('command-output', { type: 'stdout', text: data.toString() });
+});
+
+// renderer - 接收
+window.electronAPI.onCommandOutput((data) => {
+  appendLog('log-container', data.text, data.type);
+});
