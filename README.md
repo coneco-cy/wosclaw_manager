@@ -6,24 +6,69 @@ WosClaw Manager 是一个基于 Electron 的 Windows 桌面应用，帮助用户
 
 ## 目录
 
-1. [启动应用](#1-启动应用)
-2. [步骤一：欢迎页](#2-步骤一欢迎页)
-3. [步骤二：环境检查](#3-步骤二环境检查)
-4. [步骤三：安装 OpenClaw](#4-步骤三安装-openclaw)
-5. [步骤四：配置 AI Provider](#5-步骤四配置-ai-provider)
-6. [步骤五：选择 AI 模型](#6-步骤五选择-ai-模型)
-7. [步骤六：配置消息渠道](#7-步骤六配置消息渠道)
-8. [步骤七：部署与完成](#8-步骤七部署与完成)
-9. [常见问题](#9-常见问题)
+1. [开发环境搭建](#1-开发环境搭建)
+2. [启动应用](#2-启动应用)
+3. [打包为 Windows 安装包](#打包为-windows-安装包)
+4. [步骤一：欢迎页](#4-步骤一欢迎页)
+5. [步骤二：环境检查](#5-步骤二环境检查)
+6. [步骤三：安装 OpenClaw](#6-步骤三安装-openclaw)
+7. [步骤四：配置 AI Provider](#7-步骤四配置-ai-provider)
+8. [步骤五：选择 AI 模型](#8-步骤五选择-ai-模型)
+9. [步骤六：配置消息渠道](#9-步骤六配置消息渠道)
+10. [步骤七：部署与完成](#10-步骤七部署与完成)
+11. [常见问题](#11-常见问题)
 
 ---
 
-## 1. 启动应用
+## 1. 开发环境搭建
+
+### 前置要求
+
+| 工具 | 版本要求 | 说明 |
+|------|----------|------|
+| Node.js | v18+ | 运行时环境 |
+| npm | v9+ | 包管理器，随 Node.js 一同安装 |
+| Git | 任意版本 | 用于克隆仓库 |
+
+### 克隆仓库
+
+```bash
+git clone https://github.com/coneco-cy/wosclaw_manager.git
+cd wosclaw_manager
+```
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+> **注意：** 项目依赖 `node-pty`，该模块包含原生 C++ 扩展，安装时会自动编译。如果编译失败，请确保已安装 [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools) 或 Visual Studio Build Tools。
+
+### 可用脚本
+
+| 命令 | 说明 |
+|------|------|
+| `npm start` | 以生产模式启动 Electron 应用 |
+| `npm run dev` | 以开发模式启动（启用开发者工具） |
+| `npm run pack` | 打包为未压缩的可执行目录（不生成安装包，用于快速测试） |
+| `npm run build:x64` | 打包 x64 安装包 |
+| `npm run build:arm64` | 打包 arm64 安装包 |
+| `npm run build:all` | 同时打包 x64 和 arm64 安装包 |
+
+---
+
+## 2. 启动应用
 
 ### 开发模式运行
 
 ```bash
-cd wosclaw-manager
+npm run dev
+```
+
+### 生产模式运行
+
+```bash
 npm start
 ```
 
@@ -38,6 +83,8 @@ npm start
 | Node.js | v18+ | 构建环境 |
 | npm | v9+ | 包管理器 |
 | Windows SDK | 可选 | 代码签名时需要 |
+
+> 打包前请先完成[开发环境搭建](#1-开发环境搭建)并执行 `npm install`。
 
 > **注意：** 打包 arm64 版本不需要 ARM 设备，可以在 x64 Windows 上交叉编译。
 
@@ -160,7 +207,7 @@ npm run build:all
 
 ---
 
-## 2. 步骤一：欢迎页
+## 4. 步骤一：欢迎页
 
 **界面说明**
 
@@ -179,7 +226,7 @@ npm run build:all
 
 ---
 
-## 3. 步骤二：环境检查
+## 5. 步骤二：环境检查
 
 **界面说明**
 
@@ -209,7 +256,7 @@ npm run build:all
 
 ---
 
-## 4. 步骤三：安装 OpenClaw
+## 6. 步骤三：安装 OpenClaw
 
 **界面说明**
 
@@ -236,7 +283,7 @@ npm run build:all
 
 ---
 
-## 5. 步骤四：配置 AI Provider
+## 7. 步骤四：配置 AI Provider
 
 **界面说明**
 
@@ -261,7 +308,7 @@ npm run build:all
 
 ---
 
-## 6. 步骤五：选择 AI 模型
+## 8. 步骤五：选择 AI 模型
 
 **界面说明**
 
@@ -286,7 +333,7 @@ npm run build:all
 
 ---
 
-## 7. 步骤六：配置消息渠道
+## 9. 步骤六：配置消息渠道
 
 **界面说明**
 
@@ -328,7 +375,7 @@ npm run build:all
 
 ---
 
-## 8. 步骤七：部署与完成
+## 10. 步骤七：部署与完成
 
 ### 部署过程
 
@@ -376,7 +423,7 @@ npm run build:all
 
 ---
 
-## 9. 常见问题
+## 11. 常见问题
 
 ### Q: 安装 OpenClaw 时提示权限不足？
 
