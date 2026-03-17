@@ -1075,6 +1075,11 @@
     // Read the file onboard created (contains proper metadata), then deep-merge
     // our settings on top so we don't lose openclaw's internal fields.
     const existingResult = await window.electronAPI.readOpenclawConfig(STATE.profileName);
+
+    // DEBUG: print existingResult and ourSettings to deploy-log
+    appendLog('deploy-log', '\n[DEBUG] existingResult:\n' + JSON.stringify(existingResult, null, 2) + '\n', 'info');
+    appendLog('deploy-log', '\n[DEBUG] ourSettings:\n' + JSON.stringify(ourSettings, null, 2) + '\n', 'info');
+
     const mergedConfig = Object.assign({}, existingResult.config || {}, ourSettings);
     await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
