@@ -979,11 +979,14 @@
   async function buildAndWriteConfig(onProgress) {
     const BASE_PORT = 28789;
 
-    onProgress(10, '生成配置文件...');
+    onProgress(10, '准备配置内容...');
 
     const model = MODEL_CATALOG.find(m => m.id === STATE.modelId) || MODEL_CATALOG[0];
 
-    const config = {
+    // Our desired settings — will be merged AFTER onboard creates the file
+    // with proper internal metadata. Writing before onboard causes the
+    // "missing-meta-before-write" anomaly warning.
+    const ourSettings = {
       models: {
         providers: {
           anthropic: {
@@ -1011,7 +1014,7 @@
     };
 
     if (STATE.channel === 'feishu') {
-      config.channels = {
+      ourSettings.channels = {
         feishu: {
           enabled: true,
           dmPolicy: 'pairing',
@@ -1025,9 +1028,9 @@
           },
         },
       };
-      config.plugins = { entries: { feishu: { enabled: true } } };
+      ourSettings.plugins = { entries: { feishu: { enabled: true } } };
     } else if (STATE.channel === 'telegram') {
-      config.channels = {
+      ourSettings.channels = {
         telegram: {
           enabled: true,
           botToken: STATE.botToken,
@@ -1035,31 +1038,18 @@
           groups: { '*': { requireMention: true } },
         },
       };
-      config.plugins = { entries: { telegram: { enabled: true } } };
+      ourSettings.plugins = { entries: { telegram: { enabled: true } } };
     }
 
-    onProgress(30, '写入配置文件...');
-
-    // Write config to ~/.openclaw/openclaw.json (or profile-specific path)
-    const homeDir = await window.electronAPI.getHomeDir();
-    const profileSuffix = STATE.profileName === 'default' ? '' : '-' + STATE.profileName;
-    const configDir = homeDir + '\\.openclaw' + profileSuffix;
-    const configFile = configDir + '\\openclaw.json';
-
-    // Use the save config IPC handler
-    const saveResult = await window.electronAPI.saveOpenclawConfig(config);
-    if (!saveResult.success) {
-      throw new Error('写入配置失败: ' + saveResult.error);
-    }
-
-    onProgress(50, '运行 openclaw onboard...');
+    onProgress(20, '运行 openclaw onboard...');
 
     // Listen for command output
     window.electronAPI.onCommandOutput((data) => {
       appendLog('deploy-log', data.text, data.type === 'stderr' ? 'stderr' : 'stdout');
     });
 
-    // Run openclaw onboard
+    // Run openclaw onboard FIRST so it creates the config file with proper
+    // internal metadata. We merge our settings afterwards.
     const profileArgs = STATE.profileName === 'default' ? [] : ['--profile', STATE.profileName];
     const onboardArgs = [
       ...profileArgs,
@@ -1075,20 +1065,16 @@
       '--gateway-port', String(BASE_PORT),
     ];
 
-    // Pass the full args array — runOpenclawInit runs: openclaw [args]
     // e.g. default profile:  openclaw onboard --install-daemon ...
     // e.g. named profile:    openclaw --profile foo onboard --install-daemon ...
     const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs);
 
-    onProgress(85, '应用渠道配置...');
+    onProgress(80, '合并配置设置...');
 
-    // Merge channel/plugin settings into the config that onboard wrote,
-    // rather than overwriting the whole file (which would strip gateway fields).
+    // Read the file onboard created (contains proper metadata), then deep-merge
+    // our settings on top so we don't lose openclaw's internal fields.
     const existingResult = await window.electronAPI.readOpenclawConfig(STATE.profileName);
-    const mergedConfig = Object.assign({}, existingResult.config || {}, {
-      channels: config.channels,
-      plugins: config.plugins,
-    });
+    const mergedConfig = Object.assign({}, existingResult.config || {}, ourSettings);
     await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
     onProgress(92, '重启网关...');
