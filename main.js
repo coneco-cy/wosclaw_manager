@@ -49,6 +49,9 @@ app.on('window-all-closed', () => {
 function runCommand(cmd, args, options) {
   options = options || {};
   return new Promise((resolve, reject) => {
+    // Print the command line before executing
+    if (mainWindow) mainWindow.webContents.send('command-output', { type: 'info', text: '> ' + [cmd, ...args].join(' ') + '\n' });
+
     const proc = spawn(cmd, args, {
       shell: true,
       env: Object.assign({}, process.env, options.env || {}),

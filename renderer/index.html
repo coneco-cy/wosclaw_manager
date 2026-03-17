@@ -787,9 +787,7 @@
     $('install-error-section').style.display = 'none';
     clearLog('install-log');
 
-    appendLog('install-log', '> npm install -g openclaw@latest\n', 'info');
-
-    // Listen for command output
+    // Listen for command output (command line itself is printed by runCommand in main process)
     window.electronAPI.onCommandOutput((data) => {
       appendLog('install-log', data.text, data.type);
     });
