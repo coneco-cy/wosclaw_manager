@@ -572,6 +572,24 @@
   // ─── Helpers ──────────────────────────────────────────────────────────────
   function $(id) { return document.getElementById(id); }
 
+  /**
+   * Deep-merge `source` into `target`. Plain objects are merged recursively;
+   * arrays and primitives from `source` always win (override `target`).
+   * Neither argument is mutated — a new object is returned.
+   */
+  function deepMerge(target, source) {
+    if (source === null || source === undefined) return target;
+    if (target === null || target === undefined) return source;
+    if (typeof source !== 'object' || Array.isArray(source)) return source;
+    if (typeof target !== 'object' || Array.isArray(target)) return source;
+
+    const result = Object.assign({}, target);
+    for (const key of Object.keys(source)) {
+      result[key] = deepMerge(target[key], source[key]);
+    }
+    return result;
+  }
+
   function showPage(n) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = $('page-' + n);
@@ -1080,7 +1098,7 @@
     appendLog('deploy-log', '\n[DEBUG] existingResult:\n' + JSON.stringify(existingResult, null, 2) + '\n', 'info');
     appendLog('deploy-log', '\n[DEBUG] ourSettings:\n' + JSON.stringify(ourSettings, null, 2) + '\n', 'info');
 
-    const mergedConfig = Object.assign({}, existingResult.config || {}, ourSettings);
+    const mergedConfig = deepMerge(existingResult.config || {}, ourSettings);
     await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
     onProgress(92, '重启网关...');
