@@ -9,8 +9,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   installOpenclaw: () => ipcRenderer.invoke('install-openclaw'),
 
   // Configuration
-  readOpenclawConfig: () => ipcRenderer.invoke('read-openclaw-config'),
-  saveOpenclawConfig: (config) => ipcRenderer.invoke('save-openclaw-config', config),
+  readOpenclawConfig: (profileName) => ipcRenderer.invoke('read-openclaw-config', profileName),
+  saveOpenclawConfig: (config, profileName) => ipcRenderer.invoke('save-openclaw-config', config, profileName),
   runOpenclawInit: (args) => ipcRenderer.invoke('run-openclaw-init', args),
   runOpenclawConfig: (key, value) => ipcRenderer.invoke('run-openclaw-config', key, value),
 

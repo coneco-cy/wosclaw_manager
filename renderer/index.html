@@ -1077,12 +1077,21 @@
       '--gateway-port', String(BASE_PORT),
     ];
 
-    const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs.slice(1)); // pass args after 'onboard'
+    // Pass the full args array — runOpenclawInit runs: openclaw [args]
+    // e.g. default profile:  openclaw onboard --install-daemon ...
+    // e.g. named profile:    openclaw --profile foo onboard --install-daemon ...
+    const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs);
 
-    onProgress(85, '应用最终配置...');
+    onProgress(85, '应用渠道配置...');
 
-    // Re-save config to ensure channel settings are applied
-    const finalSave = await window.electronAPI.saveOpenclawConfig(config);
+    // Merge channel/plugin settings into the config that onboard wrote,
+    // rather than overwriting the whole file (which would strip gateway fields).
+    const existingResult = await window.electronAPI.readOpenclawConfig(STATE.profileName);
+    const mergedConfig = Object.assign({}, existingResult.config || {}, {
+      channels: config.channels,
+      plugins: config.plugins,
+    });
+    await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
     onProgress(92, '重启网关...');
 
