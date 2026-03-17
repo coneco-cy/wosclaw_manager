@@ -21,8 +21,8 @@
   "author": "WosClaw Team",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^28.3.3",
-    "electron-builder": "^24.13.3"
+    "electron": "^35.7.5",
+    "electron-builder": "^26.8.1"
   },
   "dependencies": {
     "node-pty": "^1.0.0"
@@ -43,14 +43,8 @@
     ],
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64", "arm64"]
-        },
-        {
-          "target": "zip",
-          "arch": ["x64", "arm64"]
-        }
+        "nsis",
+        "zip"
       ],
       "icon": "assets/icon.ico",
       "requestedExecutionLevel": "asInvoker",

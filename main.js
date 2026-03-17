@@ -94,19 +94,51 @@ function getVersion(cmd) {
 }
 
 ipcMain.handle('check-environment', async () => {
-  const nodeOk = await checkCommand('node');
-  const npmOk = await checkCommand('npm');
-  const gitOk = await checkCommand('git');
-  return [
-    { name: 'Node.js', required: true, installed: nodeOk, version: nodeOk ? await getVersion('node') : null, installUrl: 'https://nodejs.org/', description: 'JavaScript 运行时，OpenClaw 的运行基础（需要 v18+）' },
-    { name: 'npm',     required: true, installed: npmOk,  version: npmOk  ? await getVersion('npm')  : null, installUrl: 'https://nodejs.org/', description: 'Node 包管理器，随 Node.js 一起安装' },
-    { name: 'Git',     required: false, installed: gitOk, version: gitOk  ? await getVersion('git')  : null, installUrl: 'https://git-scm.com/', description: '版本控制工具（推荐安装）' },
+  function sendLog(type, text) {
+    if (mainWindow) mainWindow.webContents.send('command-output', { type, text });
+  }
+
+  const checks = [
+    { name: 'Node.js', cmd: 'node', required: true, installUrl: 'https://nodejs.org/', description: 'JavaScript 运行时，OpenClaw 的运行基础（需要 v18+）' },
+    { name: 'npm',     cmd: 'npm',  required: true, installUrl: 'https://nodejs.org/', description: 'Node 包管理器，随 Node.js 一起安装' },
+    { name: 'Git',     cmd: 'git',  required: false, installUrl: 'https://git-scm.com/', description: '版本控制工具（推荐安装）' },
   ];
+
+  const results = [];
+  for (const check of checks) {
+    const whereCmd = process.platform === 'win32' ? 'where ' + check.cmd : 'which ' + check.cmd;
+    sendLog('info', `> ${whereCmd}\n`);
+    const installed = await checkCommand(check.cmd);
+    if (installed) {
+      const version = await getVersion(check.cmd);
+      const versionCmd = check.cmd + ' --version';
+      sendLog('info', `> ${versionCmd}\n`);
+      sendLog('stdout', `  ✅ ${check.name}${version ? ' v' + version : ''} 已安装\n`);
+      results.push({ name: check.name, required: check.required, installed: true, version, installUrl: check.installUrl, description: check.description });
+    } else {
+      sendLog('stderr', `  ❌ ${check.name} 未找到，请先安装\n`);
+      results.push({ name: check.name, required: check.required, installed: false, version: null, installUrl: check.installUrl, description: check.description });
+    }
+  }
+  return results;
 });
 
 ipcMain.handle('check-openclaw', async () => {
+  function sendLog(type, text) {
+    if (mainWindow) mainWindow.webContents.send('command-output', { type, text });
+  }
+  const whereCmd = process.platform === 'win32' ? 'where openclaw' : 'which openclaw';
+  sendLog('info', `> ${whereCmd}\n`);
   const ok = await checkCommand('openclaw');
-  return { installed: ok, version: ok ? await getVersion('openclaw') : null };
+  if (ok) {
+    sendLog('info', '> openclaw --version\n');
+    const version = await getVersion('openclaw');
+    sendLog('stdout', `  ✅ openclaw${version ? ' v' + version : ''} 已安装\n`);
+    return { installed: true, version };
+  } else {
+    sendLog('stderr', '  ❌ openclaw 未找到，需要安装\n');
+    return { installed: false, version: null };
+  }
 });
 
 ipcMain.handle('install-openclaw', async () => {

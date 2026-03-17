@@ -109,6 +109,11 @@
 
         <div id="env-alert" style="display:none;"></div>
 
+        <div id="env-log-section" style="display:none;margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:8px;">📋 检查日志</div>
+          <div class="terminal" id="env-log" style="max-height:160px;"></div>
+        </div>
+
         <div id="env-install-section" style="display:none;">
           <div class="divider"></div>
           <div class="card">
@@ -145,6 +150,11 @@
             <div class="install-status-desc" id="openclaw-status-desc">请稍候</div>
           </div>
           <div id="openclaw-status-badge"></div>
+        </div>
+
+        <div id="check-log-section" style="display:none;margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:8px;">📋 检查日志</div>
+          <div class="terminal" id="check-log" style="max-height:120px;"></div>
         </div>
 
         <div id="install-log-section" style="display:none;">
@@ -451,6 +461,13 @@
             <button class="btn btn-primary" id="btn-deploy-retry">🔄 重试</button>
           </div>
         </div>
+
+        <div id="deploy-success-section" style="display:none;margin-top:16px;">
+          <div class="action-bar" style="border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-secondary" id="btn-deploy-success-back">← 返回修改</button>
+            <button class="btn btn-primary" id="btn-deploy-next">查看结果 →</button>
+          </div>
+        </div>
       </section>
 
       <!-- ══════════════════════════════════════════════════════════════ -->
@@ -508,6 +525,7 @@
           </div>
 
           <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn btn-secondary" id="btn-finish-back">← 返回</button>
             <button class="btn btn-secondary" id="btn-open-config">📁 打开配置目录</button>
             <button class="btn btn-primary" id="btn-finish">完成 ✓</button>
           </div>
@@ -559,12 +577,19 @@
     const page = $('page-' + n);
     if (page) page.classList.add('active');
 
+    // Map page '5b' to sidebar index 5 for highlighting purposes
+    const sidebarIdx = (n === '5b') ? 5 : Number(n);
+
     // Update sidebar
     document.querySelectorAll('.step-item').forEach((item, i) => {
       item.classList.remove('active', 'completed');
-      if (i < n) item.classList.add('completed');
-      else if (i === n) item.classList.add('active');
+      if (i < sidebarIdx) item.classList.add('completed');
+      else if (i === sidebarIdx) item.classList.add('active');
     });
+
+    // Track max visited page for sidebar click navigation
+    const numericN = (n === '5b') ? 5 : Number(n);
+    if (numericN > (STATE.maxVisitedPage || 0)) STATE.maxVisitedPage = numericN;
 
     STATE.currentPage = n;
   }
@@ -598,6 +623,24 @@
     runEnvCheck();
   });
 
+  // ─── Sidebar navigation ───────────────────────────────────────────────────
+  document.querySelectorAll('.step-item').forEach((item, i) => {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => {
+      const maxVisited = STATE.maxVisitedPage || 0;
+      // Only allow navigating to already-visited steps
+      if (i > maxVisited) return;
+      // Don't navigate while deploying
+      if (STATE.currentPage === '5b') return;
+      if (i === STATE.currentPage) return;
+
+      showPage(i);
+      // Re-run checks when navigating back to those pages
+      if (i === 1) runEnvCheck();
+      else if (i === 2) checkOpenclawInstall();
+    });
+  });
+
   // ─── Page 1: Environment Check ────────────────────────────────────────────
   async function runEnvCheck() {
     $('env-list').innerHTML = `
@@ -612,7 +655,16 @@
     $('env-install-section').style.display = 'none';
     $('btn-env-next').disabled = true;
 
+    // Show log section and start listening for output
+    $('env-log-section').style.display = 'block';
+    clearLog('env-log');
+    window.electronAPI.onCommandOutput((data) => {
+      appendLog('env-log', data.text, data.type);
+    });
+
     const results = await window.electronAPI.checkEnvironment();
+    window.electronAPI.removeCommandOutputListener();
+
     STATE.envResults = results;
     renderEnvResults(results);
   }
@@ -693,12 +745,20 @@
     $('openclaw-status-title').textContent = '正在检查 OpenClaw...';
     $('openclaw-status-desc').textContent = '请稍候';
     $('openclaw-status-badge').innerHTML = '';
+    $('check-log-section').style.display = 'block';
+    clearLog('check-log');
     $('install-log-section').style.display = 'none';
     $('install-error-section').style.display = 'none';
     $('btn-install-action').style.display = 'none';
     $('btn-install-next').disabled = true;
 
+    // Listen for check command output
+    window.electronAPI.onCommandOutput((data) => {
+      appendLog('check-log', data.text, data.type);
+    });
+
     const result = await window.electronAPI.checkOpenclaw();
+    window.electronAPI.removeCommandOutputListener();
 
     if (result.installed) {
       STATE.openclawInstalled = true;
@@ -879,6 +939,7 @@
   async function startDeploy() {
     showPage('5b');
     $('deploy-error-section').style.display = 'none';
+    $('deploy-success-section').style.display = 'none';
     clearLog('deploy-log');
     $('deploy-progress-bar').style.width = '0%';
     $('deploy-pct').textContent = '0%';
@@ -897,17 +958,15 @@
       updateProgress(5, '创建配置目录...');
 
       // Build config
-      const { writeOpenclawConfig } = await buildAndWriteConfig(updateProgress);
+      await buildAndWriteConfig(updateProgress);
 
       updateProgress(100, '部署完成！');
       $('deploy-status-icon').textContent = '✅';
       $('deploy-status-title').textContent = '部署成功';
-      $('deploy-status-desc').textContent = 'OpenClaw 已配置完毕';
+      $('deploy-status-desc').textContent = 'OpenClaw 已配置完毕，点击"查看结果"继续';
 
-      // Show success page after short delay
-      setTimeout(() => {
-        showSuccessPage();
-      }, 1200);
+      // Show success action bar so user can choose when to proceed
+      $('deploy-success-section').style.display = 'block';
 
     } catch (err) {
       $('deploy-status-icon').textContent = '❌';
@@ -1020,8 +1079,6 @@
 
     const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs.slice(1)); // pass args after 'onboard'
 
-    window.electronAPI.removeCommandOutputListener();
-
     onProgress(85, '应用最终配置...');
 
     // Re-save config to ensure channel settings are applied
@@ -1029,13 +1086,15 @@
 
     onProgress(92, '重启网关...');
 
-    // Try to restart gateway
+    // Try to restart gateway (listener still active, output goes to deploy-log)
     try {
       await window.electronAPI.runOpenclawConfig('gateway', 'restart');
     } catch (e) {
       // Non-fatal
       appendLog('deploy-log', '警告: 网关重启失败，可能需要手动启动\n', 'stderr');
     }
+
+    window.electronAPI.removeCommandOutputListener();
 
     STATE.deployedPort = BASE_PORT;
     return { success: true };
@@ -1058,11 +1117,14 @@
     }
   }
 
-  // ─── Deploy error handlers ────────────────────────────────────────────────
+  // ─── Deploy handlers ──────────────────────────────────────────────────────
   $('btn-deploy-back').addEventListener('click', () => showPage(5));
   $('btn-deploy-retry').addEventListener('click', startDeploy);
+  $('btn-deploy-success-back').addEventListener('click', () => showPage(5));
+  $('btn-deploy-next').addEventListener('click', () => showSuccessPage());
 
   // ─── Page 6: Complete ─────────────────────────────────────────────────────
+  $('btn-finish-back').addEventListener('click', () => showPage('5b'));
   $('btn-open-config').addEventListener('click', async () => {
     const homeDir = await window.electronAPI.getHomeDir();
     const profileSuffix = STATE.profileName === 'default' ? '' : '-' + STATE.profileName;
