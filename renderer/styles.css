@@ -421,6 +421,8 @@ html, body {
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-all;
+  user-select: text;
+  cursor: text;
 }
 
 .terminal .log-stdout { color: #94a3b8; }
