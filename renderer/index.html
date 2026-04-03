@@ -1101,14 +1101,29 @@
     const mergedConfig = deepMerge(existingResult.config || {}, ourSettings);
     await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
-    onProgress(92, '重启网关...');
+    onProgress(92, '停止网关...');
 
-    // Try to restart gateway (listener still active, output goes to deploy-log)
+    // Try to stop then start gateway (listener still active, output goes to deploy-log)
     try {
-      await window.electronAPI.runOpenclawConfig('gateway', 'restart');
+      await window.electronAPI.runOpenclawConfig('gateway', 'stop');
+    } catch (e) {
+      // Non-fatal — gateway may not be running yet
+      appendLog('deploy-log', '警告: 网关停止失败（可能尚未运行），继续启动...\n', 'stderr');
+    }
+
+    onProgress(96, '启动网关...');
+
+    try {
+      await window.electronAPI.runOpenclawConfig('gateway', 'start');
+      // Open the OpenClaw UI in the default browser after gateway starts,
+      // appending the gateway token for automatic authentication.
+      const gatewayToken = mergedConfig.gateway && mergedConfig.gateway.token;
+      const uiUrl = 'http://localhost:' + BASE_PORT + (gatewayToken ? '?token=' + encodeURIComponent(gatewayToken) : '');
+      appendLog('deploy-log', '🌐 打开 OpenClaw UI: ' + uiUrl + '\n', 'info');
+      await window.electronAPI.openUrl(uiUrl);
     } catch (e) {
       // Non-fatal
-      appendLog('deploy-log', '警告: 网关重启失败，可能需要手动启动\n', 'stderr');
+      appendLog('deploy-log', '警告: 网关启动失败，可能需要手动启动\n', 'stderr');
     }
 
     window.electronAPI.removeCommandOutputListener();
