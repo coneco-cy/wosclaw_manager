@@ -185,9 +185,10 @@ ipcMain.handle('run-openclaw-init', async (event, args) => {
   } catch (err) { return { success: false, error: err.message }; }
 });
 
-ipcMain.handle('run-openclaw-config', async (event, action, subAction) => {
+ipcMain.handle('run-openclaw-config', async (event, profileName, action, subAction) => {
   try {
-    await runCommand('openclaw', [action, subAction]);
+    const profileArgs = (!profileName || profileName === 'default') ? [] : ['--profile', profileName];
+    await runCommand('openclaw', [...profileArgs, action, subAction]);
     return { success: true };
   } catch (err) { return { success: false, error: err.message }; }
 });

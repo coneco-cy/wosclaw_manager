@@ -1000,6 +1000,22 @@
     onProgress(10, '准备配置内容...');
 
     const model = MODEL_CATALOG.find(m => m.id === STATE.modelId) || MODEL_CATALOG[0];
+    const providerKey = STATE.provider;
+    const providerConfigs = {
+      wosclaw: {
+        api: 'anthropic-messages',
+        baseUrl: 'https://api.minimaxi.com/anthropic',
+        apiKey: STATE.apiKey,
+      },
+      anthropic: {
+        api: 'anthropic-messages',
+        apiKey: STATE.apiKey,
+      },
+      openai: {
+        api: 'openai-chat',
+        apiKey: STATE.apiKey,
+      },
+    };
 
     // Our desired settings — will be merged AFTER onboard creates the file
     // with proper internal metadata. Writing before onboard causes the
@@ -1007,10 +1023,8 @@
     const ourSettings = {
       models: {
         providers: {
-          anthropic: {
-            api: 'anthropic-messages',
-            baseUrl: 'https://api.minimaxi.com/anthropic',
-            apiKey: STATE.apiKey,
+          [providerKey]: {
+            ...providerConfigs[providerKey],
             models: [{
               id: model.id,
               name: model.name,
@@ -1025,7 +1039,7 @@
       },
       agents: {
         defaults: {
-          model: { primary: 'anthropic/' + model.id },
+          model: { primary: providerKey + '/' + model.id },
         },
       },
       gateway: { port: BASE_PORT },
@@ -1105,7 +1119,7 @@
 
     // Try to stop then start gateway (listener still active, output goes to deploy-log)
     try {
-      await window.electronAPI.runOpenclawConfig('gateway', 'stop');
+      await window.electronAPI.runOpenclawConfig(STATE.profileName, 'gateway', 'stop');
     } catch (e) {
       // Non-fatal — gateway may not be running yet
       appendLog('deploy-log', '警告: 网关停止失败（可能尚未运行），继续启动...\n', 'stderr');
@@ -1114,7 +1128,7 @@
     onProgress(96, '启动网关...');
 
     try {
-      await window.electronAPI.runOpenclawConfig('gateway', 'start');
+      await window.electronAPI.runOpenclawConfig(STATE.profileName, 'gateway', 'start');
       // Open the OpenClaw UI in the default browser after gateway starts,
       // appending the gateway token for automatic authentication.
       const gatewayToken = mergedConfig.gateway && mergedConfig.gateway.token;

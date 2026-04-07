@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readOpenclawConfig: (profileName) => ipcRenderer.invoke('read-openclaw-config', profileName),
   saveOpenclawConfig: (config, profileName) => ipcRenderer.invoke('save-openclaw-config', config, profileName),
   runOpenclawInit: (args) => ipcRenderer.invoke('run-openclaw-init', args),
-  runOpenclawConfig: (key, value) => ipcRenderer.invoke('run-openclaw-config', key, value),
+  runOpenclawConfig: (profileName, key, value) => ipcRenderer.invoke('run-openclaw-config', profileName, key, value),
 
   // Utilities
   openUrl: (url) => ipcRenderer.invoke('open-url', url),
