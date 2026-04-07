@@ -18,7 +18,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    title: 'WosClaw Manager',
+    title: 'WoSClaw Manager',
     icon: iconPath,
     show: false,
     backgroundColor: '#0f172a',

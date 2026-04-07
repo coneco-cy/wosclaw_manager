@@ -1,6 +1,6 @@
-# WosClaw Manager — 使用说明文档
+# WoSClaw Manager — 使用说明文档
 
-WosClaw Manager 是一个基于 Electron 的 Windows 桌面应用，帮助用户一步一步完成 OpenClaw 的安装与初始化配置。
+WoSClaw Manager 是一个基于 Electron 的 Windows 桌面应用，帮助用户一步一步完成 OpenClaw 的安装与初始化配置。
 
 ---
 
@@ -141,10 +141,10 @@ npx electron-builder --win --arm64
 
 ```
 dist/
-├── WosClaw Manager-1.0.0-Setup-x64.exe      # x64 NSIS 安装包
-├── WosClaw Manager-1.0.0-Setup-arm64.exe    # arm64 NSIS 安装包
-├── WosClaw Manager-1.0.0-Windows-x64.zip    # x64 免安装压缩包
-├── WosClaw Manager-1.0.0-Windows-arm64.zip  # arm64 免安装压缩包
+├── WoSClaw Manager-1.0.0-Setup-x64.exe      # x64 NSIS 安装包
+├── WoSClaw Manager-1.0.0-Setup-arm64.exe    # arm64 NSIS 安装包
+├── WoSClaw Manager-1.0.0-Windows-x64.zip    # x64 免安装压缩包
+├── WoSClaw Manager-1.0.0-Windows-arm64.zip  # arm64 免安装压缩包
 └── win-unpacked/                             # 未打包的可执行文件目录
 ```
 
@@ -211,7 +211,7 @@ npm run build:all
 
 **界面说明**
 
-打开应用后，首先看到欢迎页，展示 WosClaw Manager 的四大功能：
+打开应用后，首先看到欢迎页，展示 WoSClaw Manager 的四大功能：
 
 | 功能 | 说明 |
 |------|------|
@@ -293,7 +293,7 @@ npm run build:all
 
 | Provider | 说明 | API Key 获取地址 |
 |----------|------|-----------------|
-| 🌐 WosClaw | MiniMax API（默认推荐） | https://wosclaw.ai |
+| 🌐 WoSClaw | MiniMax API（默认推荐） | https://wosclaw.ai |
 | 🧠 Anthropic | Claude 系列模型 | https://console.anthropic.com |
 | ✨ OpenAI | GPT 系列模型 | https://platform.openai.com |
 
@@ -427,7 +427,7 @@ npm run build:all
 
 ### Q: 安装 OpenClaw 时提示权限不足？
 
-以管理员身份运行 WosClaw Manager，或在管理员权限的命令行中手动执行：
+以管理员身份运行 WoSClaw Manager，或在管理员权限的命令行中手动执行：
 
 ```bash
 npm install -g openclaw@latest
@@ -441,7 +441,7 @@ npm install -g openclaw@latest
 
 ### Q: 如何修改已有配置？
 
-直接编辑配置文件 `~/.openclaw/openclaw.json`，或重新运行 WosClaw Manager 配置新实例。
+直接编辑配置文件 `~/.openclaw/openclaw.json`，或重新运行 WoSClaw Manager 配置新实例。
 
 ### Q: 如何管理多个 OpenClaw 实例？
 

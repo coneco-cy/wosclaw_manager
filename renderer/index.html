@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" />
-  <title>WosClaw Manager</title>
+  <title>WoSClaw Manager</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -12,40 +12,40 @@
     <!-- ─── Sidebar ─────────────────────────────────────────────────────── -->
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <img src="wosclaw.jpg" class="logo-icon-img" alt="WosClaw" />
+        <img src="wosclaw.jpg" class="logo-icon-img" alt="WoSClaw" />
         <div>
-          <div class="logo-text">WosClaw</div>
+          <div class="logo-text">WoSClaw</div>
           <div class="logo-sub">Manager</div>
         </div>
       </div>
       <nav class="sidebar-steps">
         <div class="step-item active" id="nav-0">
           <div class="step-num"><span>1</span></div>
-          <div class="step-label">欢迎</div>
+          <div class="step-label">Welcome</div>
         </div>
         <div class="step-item" id="nav-1">
           <div class="step-num"><span>2</span></div>
-          <div class="step-label">环境检查</div>
+          <div class="step-label">Environment</div>
         </div>
         <div class="step-item" id="nav-2">
           <div class="step-num"><span>3</span></div>
-          <div class="step-label">安装 OpenClaw</div>
+          <div class="step-label">Install OpenClaw</div>
         </div>
         <div class="step-item" id="nav-3">
           <div class="step-num"><span>4</span></div>
-          <div class="step-label">配置 Provider</div>
+          <div class="step-label">Configure Provider</div>
         </div>
         <div class="step-item" id="nav-4">
           <div class="step-num"><span>5</span></div>
-          <div class="step-label">配置 Model</div>
+          <div class="step-label">Configure Model</div>
         </div>
         <div class="step-item" id="nav-5">
           <div class="step-num"><span>6</span></div>
-          <div class="step-label">配置 Channel</div>
+          <div class="step-label">Configure Channel</div>
         </div>
         <div class="step-item" id="nav-6">
           <div class="step-num"><span>7</span></div>
-          <div class="step-label">完成</div>
+          <div class="step-label">Done</div>
         </div>
       </nav>
     </aside>
@@ -58,32 +58,32 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page active" id="page-0">
         <div class="welcome-hero">
-          <img src="wosclaw.jpg" class="welcome-logo-img" alt="WosClaw" />
-          <h1 class="welcome-title">WosClaw Manager</h1>
+          <img src="wosclaw.jpg" class="welcome-logo-img" alt="WoSClaw" />
+          <h1 class="welcome-title">WoSClaw Manager</h1>
           <p class="welcome-desc">
-            欢迎使用 WosClaw Manager！本向导将帮助您一步一步完成
-            OpenClaw 的安装与配置，让您快速上手 AI 助手。
+            Welcome to WoSClaw Manager. This guided setup will help you install
+            and configure OpenClaw step by step so you can get started quickly.
           </p>
           <div class="feature-list">
             <div class="feature-item">
               <span class="feature-icon">🔍</span>
-              <span>自动检查运行环境</span>
+              <span>Check required environment automatically</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">📦</span>
-              <span>一键安装 OpenClaw</span>
+              <span>Install OpenClaw with one click</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">⚙️</span>
-              <span>引导式配置向导</span>
+              <span>Step-by-step configuration wizard</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">💬</span>
-              <span>支持飞书等多渠道</span>
+              <span>Supports Feishu and Telegram</span>
             </div>
           </div>
           <button class="btn btn-primary btn-lg" id="btn-start">
-            开始安装配置 →
+            Start Setup →
           </button>
         </div>
       </section>
@@ -93,16 +93,16 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-1">
         <div class="page-header">
-          <h2 class="page-title">🔍 环境检查</h2>
-          <p class="page-subtitle">检查运行 OpenClaw 所需的依赖环境是否已安装。</p>
+          <h2 class="page-title">🔍 Environment Check</h2>
+          <p class="page-subtitle">Check whether the required dependencies for OpenClaw are installed.</p>
         </div>
 
         <div id="env-list">
           <div class="env-item">
             <div class="env-icon checking">⏳</div>
             <div class="env-info">
-              <div class="env-name">正在检查环境...</div>
-              <div class="env-desc">请稍候</div>
+              <div class="env-name">Checking environment...</div>
+              <div class="env-desc">Please wait</div>
             </div>
           </div>
         </div>
@@ -110,26 +110,26 @@
         <div id="env-alert" style="display:none;"></div>
 
         <div id="env-log-section" style="display:none;margin-bottom:16px;">
-          <div class="card-title" style="margin-bottom:8px;">📋 检查日志</div>
+          <div class="card-title" style="margin-bottom:8px;">📋 Check Log</div>
           <div class="terminal" id="env-log" style="max-height:160px;"></div>
         </div>
 
         <div id="env-install-section" style="display:none;">
           <div class="divider"></div>
           <div class="card">
-            <div class="card-title">📥 安装缺失依赖</div>
+            <div class="card-title">📥 Install Missing Dependencies</div>
             <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
-              检测到以下必要依赖未安装。请点击下方链接手动安装，安装完成后点击"重新检查"。
+              The following required dependencies are missing. Use the links below to install them, then click "Recheck".
             </p>
             <div id="missing-deps-list"></div>
           </div>
         </div>
 
         <div class="action-bar">
-          <button class="btn btn-secondary" id="btn-env-back">← 返回</button>
+          <button class="btn btn-secondary" id="btn-env-back">← Back</button>
           <div class="action-bar-right">
-            <button class="btn btn-secondary" id="btn-env-recheck">🔄 重新检查</button>
-            <button class="btn btn-primary" id="btn-env-next" disabled>继续 →</button>
+            <button class="btn btn-secondary" id="btn-env-recheck">🔄 Recheck</button>
+            <button class="btn btn-primary" id="btn-env-next" disabled>Continue →</button>
           </div>
         </div>
       </section>
@@ -139,26 +139,26 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-2">
         <div class="page-header">
-          <h2 class="page-title">📦 安装 OpenClaw</h2>
-          <p class="page-subtitle">通过 npm 全局安装 OpenClaw 命令行工具。</p>
+          <h2 class="page-title">📦 Install OpenClaw</h2>
+          <p class="page-subtitle">Install the OpenClaw CLI globally with npm.</p>
         </div>
 
         <div class="install-status" id="openclaw-status-card">
           <div class="install-status-icon" id="openclaw-status-icon">⏳</div>
           <div class="install-status-text">
-            <div class="install-status-title" id="openclaw-status-title">正在检查 OpenClaw...</div>
-            <div class="install-status-desc" id="openclaw-status-desc">请稍候</div>
+            <div class="install-status-title" id="openclaw-status-title">Checking OpenClaw...</div>
+            <div class="install-status-desc" id="openclaw-status-desc">Please wait</div>
           </div>
           <div id="openclaw-status-badge"></div>
         </div>
 
         <div id="check-log-section" style="display:none;margin-bottom:16px;">
-          <div class="card-title" style="margin-bottom:8px;">📋 检查日志</div>
+          <div class="card-title" style="margin-bottom:8px;">📋 Check Log</div>
           <div class="terminal" id="check-log" style="max-height:120px;"></div>
         </div>
 
         <div id="install-log-section" style="display:none;">
-          <div class="card-title" style="margin-bottom:8px;">📋 安装日志</div>
+          <div class="card-title" style="margin-bottom:8px;">📋 Install Log</div>
           <div class="terminal" id="install-log"></div>
         </div>
 
@@ -170,12 +170,12 @@
         </div>
 
         <div class="action-bar">
-          <button class="btn btn-secondary" id="btn-install-back">← 返回</button>
+          <button class="btn btn-secondary" id="btn-install-back">← Back</button>
           <div class="action-bar-right">
             <button class="btn btn-primary" id="btn-install-action" style="display:none;">
-              📥 安装 OpenClaw
+              📥 Install OpenClaw
             </button>
-            <button class="btn btn-primary" id="btn-install-next" disabled>继续 →</button>
+            <button class="btn btn-primary" id="btn-install-next" disabled>Continue →</button>
           </div>
         </div>
       </section>
@@ -185,8 +185,8 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-3">
         <div class="page-header">
-          <h2 class="page-title">🤖 配置 AI Provider</h2>
-          <p class="page-subtitle">选择您要使用的 AI 服务提供商，并填写对应的 API 密钥。</p>
+          <h2 class="page-title">🤖 Configure AI Provider</h2>
+          <p class="page-subtitle">Choose the AI provider you want to use and enter the corresponding API key.</p>
         </div>
 
         <!-- Config step indicator -->
@@ -211,18 +211,18 @@
         <div class="provider-grid">
           <div class="provider-card selected" data-provider="wosclaw" id="provider-wosclaw">
             <div class="provider-icon">🌐</div>
-            <div class="provider-name">WosClaw</div>
+            <div class="provider-name">WoSClaw</div>
             <div class="provider-desc">MiniMax API</div>
           </div>
           <div class="provider-card" data-provider="anthropic" id="provider-anthropic">
             <div class="provider-icon">🧠</div>
             <div class="provider-name">Anthropic</div>
-            <div class="provider-desc">Claude 系列</div>
+            <div class="provider-desc">Claude models</div>
           </div>
           <div class="provider-card" data-provider="openai" id="provider-openai">
             <div class="provider-icon">✨</div>
             <div class="provider-name">OpenAI</div>
-            <div class="provider-desc">GPT 系列</div>
+            <div class="provider-desc">GPT models</div>
           </div>
         </div>
 
@@ -239,13 +239,13 @@
             autocomplete="off"
           />
           <div class="form-hint" id="api-key-hint">
-            前往 <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;">wosclaw.ai</a> 获取您的 API Key
+            Visit <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;">wosclaw.ai</a> to get your API key
           </div>
         </div>
 
         <!-- Instance name -->
         <div class="form-group">
-          <label class="form-label">实例名称（可选）</label>
+          <label class="form-label">Instance Name (Optional)</label>
           <input
             type="text"
             class="form-input"
@@ -253,12 +253,12 @@
             placeholder="default"
             autocomplete="off"
           />
-          <div class="form-hint">为此 OpenClaw 实例起一个名字，留空则使用 "default"</div>
+          <div class="form-hint">Give this OpenClaw instance a name. Leave it blank to use "default".</div>
         </div>
 
         <div class="action-bar">
-          <button class="btn btn-secondary" id="btn-provider-back">← 返回</button>
-          <button class="btn btn-primary" id="btn-provider-next">继续 →</button>
+          <button class="btn btn-secondary" id="btn-provider-back">← Back</button>
+          <button class="btn btn-primary" id="btn-provider-next">Continue →</button>
         </div>
       </section>
 
@@ -267,8 +267,8 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-4">
         <div class="page-header">
-          <h2 class="page-title">🎯 选择 AI 模型</h2>
-          <p class="page-subtitle">选择您希望使用的 AI 模型。不同模型在能力和速度上有所差异。</p>
+          <h2 class="page-title">🎯 Choose an AI Model</h2>
+          <p class="page-subtitle">Select the AI model you want to use. Different models vary in quality and speed.</p>
         </div>
 
         <!-- Config step indicator -->
@@ -294,8 +294,8 @@
         </div>
 
         <div class="action-bar">
-          <button class="btn btn-secondary" id="btn-model-back">← 返回</button>
-          <button class="btn btn-primary" id="btn-model-next">继续 →</button>
+          <button class="btn btn-secondary" id="btn-model-back">← Back</button>
+          <button class="btn btn-primary" id="btn-model-next">Continue →</button>
         </div>
       </section>
 
@@ -304,8 +304,8 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-5">
         <div class="page-header">
-          <h2 class="page-title">💬 配置消息渠道</h2>
-          <p class="page-subtitle">选择 OpenClaw 接收消息的渠道，并完成相应配置。</p>
+          <h2 class="page-title">💬 Configure Message Channel</h2>
+          <p class="page-subtitle">Choose the channel OpenClaw will use to receive messages and complete the related setup.</p>
         </div>
 
         <!-- Config step indicator -->
@@ -331,15 +331,15 @@
           <div class="channel-card selected" data-channel="feishu" id="channel-feishu">
             <div class="channel-icon">🪶</div>
             <div class="channel-info">
-              <div class="channel-name">飞书 (Feishu)</div>
-              <div class="channel-desc">企业即时通讯</div>
+              <div class="channel-name">Feishu</div>
+              <div class="channel-desc">Enterprise messaging</div>
             </div>
           </div>
           <div class="channel-card" data-channel="telegram" id="channel-telegram">
             <div class="channel-icon">✈️</div>
             <div class="channel-info">
               <div class="channel-name">Telegram</div>
-              <div class="channel-desc">即时通讯机器人</div>
+              <div class="channel-desc">Messaging bot</div>
             </div>
           </div>
         </div>
@@ -347,12 +347,12 @@
         <!-- ── Feishu Config ── -->
         <div id="feishu-config">
           <div class="feishu-guide">
-            <div class="feishu-guide-title">📖 飞书配置指南</div>
+            <div class="feishu-guide-title">📖 Feishu Setup Guide</div>
             <ol>
-              <li>前往 <a href="#" onclick="openFeishuPlatform()">飞书开放平台</a> 创建企业自建应用</li>
-              <li>在应用凭证页面获取 <strong>App ID</strong> 和 <strong>App Secret</strong></li>
-              <li>开启机器人能力，并配置消息事件订阅</li>
-              <li>将下方信息填入后点击继续</li>
+              <li>Go to the <a href="#" onclick="openFeishuPlatform()">Feishu Open Platform</a> and create an internal app</li>
+              <li>Get your <strong>App ID</strong> and <strong>App Secret</strong> from the credentials page</li>
+              <li>Enable the bot capability and configure event subscriptions</li>
+              <li>Fill in the information below, then continue</li>
             </ol>
           </div>
 
@@ -385,8 +385,9 @@
           <div class="alert alert-info">
             <span class="alert-icon">ℹ️</span>
             <div>
-              配置完成后，请在飞书开放平台 → 事件订阅 → 选择"使用 WebSocket 接收事件"并保存，
-              然后向机器人发送消息即可开始使用。
+              After setup, go to Feishu Open Platform → Event Subscriptions, choose
+              "Use WebSocket to receive events", save the settings, and then send a
+              message to your bot to get started.
             </div>
           </div>
         </div>
@@ -405,7 +406,7 @@
               autocomplete="off"
             />
             <div class="form-hint">
-              通过 <a href="#" onclick="openTelegramBotFather()" style="color:var(--accent);cursor:pointer;">@BotFather</a> 创建机器人并获取 Token
+              Use <a href="#" onclick="openTelegramBotFather()" style="color:var(--accent);cursor:pointer;">@BotFather</a> to create a bot and get its token
             </div>
           </div>
         </div>
@@ -416,8 +417,8 @@
         </div>
 
         <div class="action-bar">
-          <button class="btn btn-secondary" id="btn-channel-back">← 返回</button>
-          <button class="btn btn-primary" id="btn-channel-next">开始部署 🚀</button>
+          <button class="btn btn-secondary" id="btn-channel-back">← Back</button>
+          <button class="btn btn-primary" id="btn-channel-next">Start Deployment 🚀</button>
         </div>
       </section>
 
@@ -426,21 +427,21 @@
       <!-- ══════════════════════════════════════════════════════════════ -->
       <section class="page" id="page-5b">
         <div class="page-header">
-          <h2 class="page-title">🚀 正在部署</h2>
-          <p class="page-subtitle">正在写入配置并启动 OpenClaw，请稍候...</p>
+          <h2 class="page-title">🚀 Deploying</h2>
+          <p class="page-subtitle">Writing configuration and starting OpenClaw. Please wait...</p>
         </div>
 
         <div class="install-status" id="deploy-status-card">
           <div class="install-status-icon" id="deploy-status-icon">⚙️</div>
           <div class="install-status-text">
-            <div class="install-status-title" id="deploy-status-title">准备中...</div>
-            <div class="install-status-desc" id="deploy-status-desc">正在初始化配置</div>
+            <div class="install-status-title" id="deploy-status-title">Preparing...</div>
+            <div class="install-status-desc" id="deploy-status-desc">Initializing configuration</div>
           </div>
         </div>
 
         <div style="margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span style="font-size:12px;color:var(--text-muted);">部署进度</span>
+            <span style="font-size:12px;color:var(--text-muted);">Deployment Progress</span>
             <span style="font-size:12px;font-weight:600;color:var(--accent);" id="deploy-pct">0%</span>
           </div>
           <div class="progress-wrap">
@@ -448,7 +449,7 @@
           </div>
         </div>
 
-        <div class="card-title" style="margin-bottom:8px;margin-top:16px;">📋 部署日志</div>
+        <div class="card-title" style="margin-bottom:8px;margin-top:16px;">📋 Deployment Log</div>
         <div class="terminal" id="deploy-log" style="max-height:260px;"></div>
 
         <div id="deploy-error-section" style="display:none;margin-top:16px;">
@@ -457,15 +458,15 @@
             <div id="deploy-error-msg"></div>
           </div>
           <div class="action-bar" style="border-top:none;padding-top:0;margin-top:16px;">
-            <button class="btn btn-secondary" id="btn-deploy-back">← 返回修改</button>
-            <button class="btn btn-primary" id="btn-deploy-retry">🔄 重试</button>
+            <button class="btn btn-secondary" id="btn-deploy-back">← Back to Edit</button>
+            <button class="btn btn-primary" id="btn-deploy-retry">🔄 Retry</button>
           </div>
         </div>
 
         <div id="deploy-success-section" style="display:none;margin-top:16px;">
           <div class="action-bar" style="border-top:1px solid var(--border);padding-top:16px;">
-            <button class="btn btn-secondary" id="btn-deploy-success-back">← 返回修改</button>
-            <button class="btn btn-primary" id="btn-deploy-next">查看结果 →</button>
+            <button class="btn btn-secondary" id="btn-deploy-success-back">← Back to Edit</button>
+            <button class="btn btn-primary" id="btn-deploy-next">View Result →</button>
           </div>
         </div>
       </section>
@@ -476,31 +477,32 @@
       <section class="page" id="page-6">
         <div class="success-hero">
           <div class="success-icon">✅</div>
-          <h2 class="success-title">配置完成！</h2>
+          <h2 class="success-title">Setup Complete!</h2>
           <p class="success-desc">
-            OpenClaw 已成功安装并配置完毕。您现在可以通过所选渠道与 AI 助手对话了。
+            OpenClaw has been installed and configured successfully. You can now
+            talk to your AI assistant through the selected channel.
           </p>
 
           <div class="config-summary" id="config-summary">
-            <div class="config-summary-title">配置摘要</div>
+            <div class="config-summary-title">Configuration Summary</div>
             <div class="config-summary-item">
-              <span class="key">实例名称</span>
+              <span class="key">Instance Name</span>
               <span class="value" id="summary-profile">default</span>
             </div>
             <div class="config-summary-item">
               <span class="key">Provider</span>
-              <span class="value" id="summary-provider">WosClaw</span>
+              <span class="value" id="summary-provider">WoSClaw</span>
             </div>
             <div class="config-summary-item">
-              <span class="key">模型</span>
+              <span class="key">Model</span>
               <span class="value" id="summary-model">-</span>
             </div>
             <div class="config-summary-item">
-              <span class="key">渠道</span>
-              <span class="value" id="summary-channel">飞书</span>
+              <span class="key">Channel</span>
+              <span class="value" id="summary-channel">Feishu</span>
             </div>
             <div class="config-summary-item">
-              <span class="key">网关端口</span>
+              <span class="key">Gateway Port</span>
               <span class="value" id="summary-port">28789</span>
             </div>
           </div>
@@ -509,9 +511,10 @@
           <div id="feishu-post-setup" class="alert alert-info" style="max-width:480px;text-align:left;">
             <span class="alert-icon">🪶</span>
             <div>
-              <strong>飞书后续步骤：</strong><br/>
-              前往飞书开放平台 → 事件订阅 → 选择"使用 WebSocket 接收事件"并保存。
-              然后向机器人发送消息即可开始使用！
+              <strong>Feishu Next Steps:</strong><br/>
+              Go to Feishu Open Platform → Event Subscriptions, choose "Use
+              WebSocket to receive events", save the settings, then send a
+              message to your bot to get started.
             </div>
           </div>
 
@@ -519,15 +522,15 @@
           <div id="telegram-post-setup" class="alert alert-info" style="max-width:480px;text-align:left;display:none;">
             <span class="alert-icon">✈️</span>
             <div>
-              <strong>Telegram 后续步骤：</strong><br/>
-              直接向您的 Telegram 机器人发送消息即可开始使用！
+              <strong>Telegram Next Steps:</strong><br/>
+              Send a message to your Telegram bot to get started.
             </div>
           </div>
 
           <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-            <button class="btn btn-secondary" id="btn-finish-back">← 返回</button>
-            <button class="btn btn-secondary" id="btn-open-config">📁 打开配置目录</button>
-            <button class="btn btn-primary" id="btn-finish">完成 ✓</button>
+            <button class="btn btn-secondary" id="btn-finish-back">← Back</button>
+            <button class="btn btn-secondary" id="btn-open-config">📁 Open Config Folder</button>
+            <button class="btn btn-primary" id="btn-finish">Finish ✓</button>
           </div>
         </div>
       </section>
@@ -555,18 +558,18 @@
   };
 
   const MODEL_CATALOG = [
-    { id: 'claude-opus-4-6',          name: 'Claude Opus 4.6',   desc: '最强能力，适合复杂任务' },
-    { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5',   desc: '强大能力，均衡选择' },
-    { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5', desc: '速度与能力的平衡' },
-    { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5', desc: '快速响应，轻量任务' },
-    { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4',   desc: '稳定可靠' },
-    { id: 'minimax-free',             name: 'MiniMax 2.5',       desc: '免费使用' },
+    { id: 'claude-opus-4-6',          name: 'Claude Opus 4.6',   desc: 'Best capability for complex tasks' },
+    { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5',   desc: 'Strong overall balance' },
+    { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5', desc: 'Balanced speed and capability' },
+    { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5', desc: 'Fast responses for lighter tasks' },
+    { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4',   desc: 'Stable and reliable' },
+    { id: 'minimax-free',             name: 'MiniMax 2.5',       desc: 'Free to use' },
   ];
 
   const PROVIDER_INFO = {
-    wosclaw:   { name: 'WosClaw',   url: 'https://wosclaw.ai',          hint: '前往 wosclaw.ai 获取您的 API Key' },
-    anthropic: { name: 'Anthropic', url: 'https://console.anthropic.com', hint: '前往 Anthropic Console 获取 API Key' },
-    openai:    { name: 'OpenAI',    url: 'https://platform.openai.com',  hint: '前往 OpenAI Platform 获取 API Key' },
+    wosclaw:   { name: 'WoSClaw',   url: 'https://wosclaw.ai',          hint: 'Visit wosclaw.ai to get your API key' },
+    anthropic: { name: 'Anthropic', url: 'https://console.anthropic.com', hint: 'Visit Anthropic Console to get your API key' },
+    openai:    { name: 'OpenAI',    url: 'https://platform.openai.com',  hint: 'Visit OpenAI Platform to get your API key' },
   };
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -665,8 +668,8 @@
       <div class="env-item">
         <div class="env-icon checking">⏳</div>
         <div class="env-info">
-          <div class="env-name">正在检查环境...</div>
-          <div class="env-desc">请稍候</div>
+          <div class="env-name">Checking environment...</div>
+          <div class="env-desc">Please wait</div>
         </div>
       </div>`;
     $('env-alert').style.display = 'none';
@@ -697,15 +700,15 @@
       let iconClass, statusClass, statusText, icon;
       if (r.installed) {
         iconClass = 'ok'; statusClass = 'ok';
-        statusText = r.version ? `v${r.version}` : '已安装';
+        statusText = r.version ? `v${r.version}` : 'Installed';
         icon = '✅';
       } else if (r.required) {
         iconClass = 'missing'; statusClass = 'missing';
-        statusText = '未安装';
+        statusText = 'Not installed';
         icon = '❌';
       } else {
         iconClass = 'optional'; statusClass = 'optional';
-        statusText = '未安装（可选）';
+        statusText = 'Not installed (optional)';
         icon = '⚠️';
       }
 
@@ -727,7 +730,7 @@
     if (allOk) {
       $('env-alert').style.display = 'flex';
       $('env-alert').className = 'alert alert-success';
-      $('env-alert').innerHTML = '<span class="alert-icon">✅</span><div>所有必要依赖已安装，可以继续。</div>';
+      $('env-alert').innerHTML = '<span class="alert-icon">✅</span><div>All required dependencies are installed. You can continue.</div>';
       $('btn-env-next').disabled = false;
     } else {
       $('env-alert').style.display = 'none';
@@ -742,7 +745,7 @@
               <div style="font-size:12px;color:var(--text-muted);">${r.description}</div>
             </div>
             <button class="btn btn-primary btn-sm" onclick="window.electronAPI.openUrl('${r.installUrl}')">
-              下载安装
+              Download
             </button>
           </div>`;
       }
@@ -760,8 +763,8 @@
   // ─── Page 2: Install OpenClaw ─────────────────────────────────────────────
   async function checkOpenclawInstall() {
     $('openclaw-status-icon').textContent = '⏳';
-    $('openclaw-status-title').textContent = '正在检查 OpenClaw...';
-    $('openclaw-status-desc').textContent = '请稍候';
+    $('openclaw-status-title').textContent = 'Checking OpenClaw...';
+    $('openclaw-status-desc').textContent = 'Please wait';
     $('openclaw-status-badge').innerHTML = '';
     $('check-log-section').style.display = 'block';
     clearLog('check-log');
@@ -782,16 +785,16 @@
       STATE.openclawInstalled = true;
       STATE.openclawVersion = result.version;
       $('openclaw-status-icon').textContent = '✅';
-      $('openclaw-status-title').textContent = 'OpenClaw 已安装';
-      $('openclaw-status-desc').textContent = result.version ? `版本: ${result.version}` : '已就绪';
-      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">已安装</span>';
+      $('openclaw-status-title').textContent = 'OpenClaw is installed';
+      $('openclaw-status-desc').textContent = result.version ? `Version: ${result.version}` : 'Ready';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">Installed</span>';
       $('btn-install-next').disabled = false;
     } else {
       STATE.openclawInstalled = false;
       $('openclaw-status-icon').textContent = '📦';
-      $('openclaw-status-title').textContent = 'OpenClaw 未安装';
-      $('openclaw-status-desc').textContent = '点击右侧按钮通过 npm 安装';
-      $('openclaw-status-badge').innerHTML = '<span class="badge badge-error">未安装</span>';
+      $('openclaw-status-title').textContent = 'OpenClaw is not installed';
+      $('openclaw-status-desc').textContent = 'Use the button on the right to install it with npm';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-error">Not installed</span>';
       $('btn-install-action').style.display = 'inline-flex';
     }
   }
@@ -800,7 +803,7 @@
 
   $('btn-install-action').addEventListener('click', async () => {
     $('btn-install-action').disabled = true;
-    $('btn-install-action').innerHTML = '<span class="spinner"></span> 安装中...';
+    $('btn-install-action').innerHTML = '<span class="spinner"></span> Installing...';
     $('install-log-section').style.display = 'block';
     $('install-error-section').style.display = 'none';
     clearLog('install-log');
@@ -814,19 +817,19 @@
     window.electronAPI.removeCommandOutputListener();
 
     if (result.success) {
-      appendLog('install-log', '\n✅ OpenClaw 安装成功！\n', 'success');
+      appendLog('install-log', '\n✅ OpenClaw installed successfully!\n', 'success');
       $('openclaw-status-icon').textContent = '✅';
-      $('openclaw-status-title').textContent = 'OpenClaw 安装成功';
-      $('openclaw-status-desc').textContent = '已准备好进行配置';
-      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">已安装</span>';
+      $('openclaw-status-title').textContent = 'OpenClaw installed successfully';
+      $('openclaw-status-desc').textContent = 'Ready for configuration';
+      $('openclaw-status-badge').innerHTML = '<span class="badge badge-success">Installed</span>';
       $('btn-install-action').style.display = 'none';
       $('btn-install-next').disabled = false;
     } else {
-      appendLog('install-log', '\n❌ 安装失败: ' + result.error + '\n', 'error');
+      appendLog('install-log', '\n❌ Installation failed: ' + result.error + '\n', 'error');
       $('install-error-section').style.display = 'block';
-      $('install-error-msg').textContent = result.error || '安装失败，请检查网络连接或以管理员身份运行。';
+      $('install-error-msg').textContent = result.error || 'Installation failed. Check your network connection or run the app as administrator.';
       $('btn-install-action').disabled = false;
-      $('btn-install-action').innerHTML = '📥 重试安装';
+      $('btn-install-action').innerHTML = '📥 Retry Install';
     }
   });
 
@@ -846,7 +849,7 @@
 
   function updateProviderHint() {
     const info = PROVIDER_INFO[STATE.provider] || PROVIDER_INFO.wosclaw;
-    $('api-key-hint').innerHTML = `前往 <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;" onclick="window.electronAPI.openUrl('${info.url}')">${info.url.replace('https://', '')}</a> 获取您的 API Key`;
+    $('api-key-hint').innerHTML = `Visit <a href="#" id="link-api-key" style="color:var(--accent);cursor:pointer;" onclick="window.electronAPI.openUrl('${info.url}')">${info.url.replace('https://', '')}</a> to get your API key`;
   }
 
   $('btn-provider-back').addEventListener('click', () => showPage(2));
@@ -933,7 +936,7 @@
       const appSecret = $('input-feishu-app-secret').value.trim();
       if (!appId || !appSecret) {
         $('channel-error').style.display = 'flex';
-        $('channel-error-msg').textContent = '请填写飞书 App ID 和 App Secret';
+        $('channel-error-msg').textContent = 'Please enter the Feishu App ID and App Secret';
         return;
       }
       STATE.feishuAppId = appId;
@@ -942,7 +945,7 @@
       const token = $('input-bot-token').value.trim();
       if (!token) {
         $('channel-error').style.display = 'flex';
-        $('channel-error-msg').textContent = '请填写 Telegram Bot Token';
+        $('channel-error-msg').textContent = 'Please enter the Telegram bot token';
         return;
       }
       STATE.botToken = token;
@@ -960,8 +963,8 @@
     $('deploy-progress-bar').style.width = '0%';
     $('deploy-pct').textContent = '0%';
     $('deploy-status-icon').textContent = '⚙️';
-    $('deploy-status-title').textContent = '正在部署...';
-    $('deploy-status-desc').textContent = '初始化配置';
+    $('deploy-status-title').textContent = 'Deploying...';
+    $('deploy-status-desc').textContent = 'Initializing configuration';
 
     function updateProgress(pct, msg) {
       $('deploy-progress-bar').style.width = pct + '%';

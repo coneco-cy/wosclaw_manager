@@ -1,7 +1,7 @@
 {
   "name": "wosclaw-manager",
   "version": "1.0.0",
-  "description": "WosClaw Manager - A Windows desktop app to install and configure OpenClaw",
+  "description": "WoSClaw Manager - A Windows desktop app to install and configure OpenClaw",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -18,7 +18,7 @@
     "windows",
     "manager"
   ],
-  "author": "WosClaw Team",
+  "author": "WoSClaw Team",
   "license": "MIT",
   "devDependencies": {
     "electron": "^35.7.5",
@@ -29,8 +29,8 @@
   },
   "build": {
     "appId": "com.wosclaw.manager",
-    "productName": "WosClaw Manager",
-    "copyright": "Copyright © 2025 WosClaw Team",
+    "productName": "WoSClaw Manager",
+    "copyright": "Copyright © 2025 WoSClaw Team",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -59,7 +59,7 @@
       "installerHeaderIcon": "assets/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "WosClaw Manager",
+      "shortcutName": "WoSClaw Manager",
       "artifactName": "${productName}-${version}-Setup-${arch}.${ext}"
     }
   }
