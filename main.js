@@ -140,9 +140,9 @@ ipcMain.handle('check-environment', async () => {
   }
 
   const checks = [
-    { name: 'Node.js', cmd: 'node', required: true, installUrl: 'https://nodejs.org/', description: 'JavaScript 运行时，OpenClaw 的运行基础（需要 v18+）' },
-    { name: 'npm',     cmd: 'npm',  required: true, installUrl: 'https://nodejs.org/', description: 'Node 包管理器，随 Node.js 一起安装' },
-    { name: 'Git',     cmd: 'git',  required: false, installUrl: 'https://git-scm.com/', description: '版本控制工具（推荐安装）' },
+    { name: 'Node.js', cmd: 'node', required: true, installUrl: 'https://nodejs.org/', description: 'JavaScript runtime required to run OpenClaw (v18+)' },
+    { name: 'npm',     cmd: 'npm',  required: true, installUrl: 'https://nodejs.org/', description: 'Node package manager, installed together with Node.js' },
+    { name: 'Git',     cmd: 'git',  required: false, installUrl: 'https://git-scm.com/', description: 'Version control tool (recommended)' },
   ];
 
   const results = [];
@@ -154,10 +154,10 @@ ipcMain.handle('check-environment', async () => {
       const version = await getVersion(check.cmd);
       const versionCmd = check.cmd + ' --version';
       sendLog('info', `> ${versionCmd}\n`);
-      sendLog('stdout', `  ✅ ${check.name}${version ? ' v' + version : ''} 已安装\n`);
+      sendLog('stdout', `  ✅ ${check.name}${version ? ' v' + version : ''} is installed\n`);
       results.push({ name: check.name, required: check.required, installed: true, version, installUrl: check.installUrl, description: check.description });
     } else {
-      sendLog('stderr', `  ❌ ${check.name} 未找到，请先安装\n`);
+      sendLog('stderr', `  ❌ ${check.name} was not found. Please install it first.\n`);
       results.push({ name: check.name, required: check.required, installed: false, version: null, installUrl: check.installUrl, description: check.description });
     }
   }
@@ -174,10 +174,10 @@ ipcMain.handle('check-openclaw', async () => {
   if (ok) {
     sendLog('info', '> openclaw --version\n');
     const version = await getVersion('openclaw');
-    sendLog('stdout', `  ✅ openclaw${version ? ' v' + version : ''} 已安装\n`);
+    sendLog('stdout', `  ✅ openclaw${version ? ' v' + version : ''} is installed\n`);
     return { installed: true, version };
   } else {
-    sendLog('stderr', '  ❌ openclaw 未找到，需要安装\n');
+    sendLog('stderr', '  ❌ openclaw was not found and needs to be installed\n');
     return { installed: false, version: null };
   }
 });
