@@ -1134,7 +1134,7 @@
       await window.electronAPI.runOpenclawConfig(STATE.profileName, 'gateway', 'start');
       // Open the OpenClaw UI in the default browser after gateway starts,
       // appending the gateway token for automatic authentication.
-      const gatewayToken = mergedConfig.gateway && mergedConfig.gateway.token;
+      const gatewayToken = mergedConfig.gateway && mergedConfig.gateway.auth.token;
       const uiUrl = 'http://localhost:' + BASE_PORT + (gatewayToken ? '?token=' + encodeURIComponent(gatewayToken) : '');
       appendLog('deploy-log', '🌐 Opening OpenClaw UI: ' + uiUrl + '\n', 'info');
       await window.electronAPI.openUrl(uiUrl);
