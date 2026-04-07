@@ -100,6 +100,7 @@ async function disableOpenclawTaskPowerCondition() {
   if (process.platform !== 'win32') return { success: true, updated: [] };
 
   const script = `
+$ErrorActionPreference = 'Stop'
 $tasks = Get-ScheduledTask | Where-Object {
   $_.TaskName -match 'openclaw|claw' -or $_.TaskPath -match 'openclaw|claw'
 }
@@ -116,22 +117,33 @@ foreach ($task in $tasks) {
     $changed = $true
   }
   if ($changed) {
-    Set-ScheduledTask -TaskName $task.TaskName -TaskPath $task.TaskPath -Settings $settings | Out-Null
+    Set-ScheduledTask -TaskName $task.TaskName -TaskPath $task.TaskPath -Settings $settings -ErrorAction Stop | Out-Null
     $updated += ($task.TaskPath + $task.TaskName)
   }
 }
 $updated
 `.trim();
 
-  const result = await runCommand('powershell', ['-NoProfile', '-Command', script]);
-  const updated = result.stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-  if (mainWindow && updated.length > 0) {
-    mainWindow.webContents.send('command-output', {
-      type: 'info',
-      text: 'Updated scheduled task power settings:\n' + updated.map(name => '  - ' + name).join('\n') + '\n',
-    });
+  try {
+    const encodedScript = Buffer.from(script, 'utf16le').toString('base64');
+    const result = await runCommand('powershell', ['-NoProfile', '-EncodedCommand', encodedScript]);
+    const updated = result.stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    if (mainWindow && updated.length > 0) {
+      mainWindow.webContents.send('command-output', {
+        type: 'info',
+        text: 'Updated scheduled task power settings:\n' + updated.map(name => '  - ' + name).join('\n') + '\n',
+      });
+    }
+    return { success: true, updated };
+  } catch (err) {
+    if (mainWindow) {
+      mainWindow.webContents.send('command-output', {
+        type: 'stderr',
+        text: 'Warning: Failed to update scheduled task power settings. Administrator privileges may be required.\n',
+      });
+    }
+    return { success: false, updated: [], error: err.message };
   }
-  return { success: true, updated };
 }
 
 ipcMain.handle('check-environment', async () => {
