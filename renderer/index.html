@@ -974,33 +974,33 @@
     }
 
     try {
-      updateProgress(5, '创建配置目录...');
+      updateProgress(5, 'Creating configuration directory...');
 
       // Build config
       await buildAndWriteConfig(updateProgress);
 
-      updateProgress(100, '部署完成！');
+      updateProgress(100, 'Deployment complete!');
       $('deploy-status-icon').textContent = '✅';
-      $('deploy-status-title').textContent = '部署成功';
-      $('deploy-status-desc').textContent = 'OpenClaw 已配置完毕，点击"查看结果"继续';
+      $('deploy-status-title').textContent = 'Deployment successful';
+      $('deploy-status-desc').textContent = 'OpenClaw has been configured. Click "View Result" to continue.';
 
       // Show success action bar so user can choose when to proceed
       $('deploy-success-section').style.display = 'block';
 
     } catch (err) {
       $('deploy-status-icon').textContent = '❌';
-      $('deploy-status-title').textContent = '部署失败';
+      $('deploy-status-title').textContent = 'Deployment failed';
       $('deploy-status-desc').textContent = err.message;
       $('deploy-error-section').style.display = 'block';
       $('deploy-error-msg').textContent = err.message;
-      appendLog('deploy-log', '\n❌ 错误: ' + err.message + '\n', 'error');
+      appendLog('deploy-log', '\n❌ Error: ' + err.message + '\n', 'error');
     }
   }
 
   async function buildAndWriteConfig(onProgress) {
     const BASE_PORT = 28789;
 
-    onProgress(10, '准备配置内容...');
+    onProgress(10, 'Preparing configuration...');
 
     const model = MODEL_CATALOG.find(m => m.id === STATE.modelId) || MODEL_CATALOG[0];
     const providerKey = STATE.provider;
@@ -1076,7 +1076,7 @@
       ourSettings.plugins = { entries: { telegram: { enabled: true } } };
     }
 
-    onProgress(20, '运行 openclaw onboard...');
+    onProgress(20, 'Running openclaw onboard...');
 
     // Listen for command output
     window.electronAPI.onCommandOutput((data) => {
@@ -1105,7 +1105,7 @@
     // e.g. named profile:    openclaw --profile foo onboard --install-daemon ...
     const onboardResult = await window.electronAPI.runOpenclawInit(onboardArgs);
 
-    onProgress(80, '合并配置设置...');
+    onProgress(80, 'Merging configuration settings...');
 
     // Read the file onboard created (contains proper metadata), then deep-merge
     // our settings on top so we don't lose openclaw's internal fields.
@@ -1118,17 +1118,17 @@
     const mergedConfig = deepMerge(existingResult.config || {}, ourSettings);
     await window.electronAPI.saveOpenclawConfig(mergedConfig, STATE.profileName);
 
-    onProgress(92, '停止网关...');
+    onProgress(92, 'Stopping gateway...');
 
     // Try to stop then start gateway (listener still active, output goes to deploy-log)
     try {
       await window.electronAPI.runOpenclawConfig(STATE.profileName, 'gateway', 'stop');
     } catch (e) {
       // Non-fatal — gateway may not be running yet
-      appendLog('deploy-log', '警告: 网关停止失败（可能尚未运行），继续启动...\n', 'stderr');
+      appendLog('deploy-log', 'Warning: Failed to stop gateway (it may not be running yet). Continuing...\n', 'stderr');
     }
 
-    onProgress(96, '启动网关...');
+    onProgress(96, 'Starting gateway...');
 
     try {
       await window.electronAPI.runOpenclawConfig(STATE.profileName, 'gateway', 'start');
@@ -1136,11 +1136,11 @@
       // appending the gateway token for automatic authentication.
       const gatewayToken = mergedConfig.gateway && mergedConfig.gateway.token;
       const uiUrl = 'http://localhost:' + BASE_PORT + (gatewayToken ? '?token=' + encodeURIComponent(gatewayToken) : '');
-      appendLog('deploy-log', '🌐 打开 OpenClaw UI: ' + uiUrl + '\n', 'info');
+      appendLog('deploy-log', '🌐 Opening OpenClaw UI: ' + uiUrl + '\n', 'info');
       await window.electronAPI.openUrl(uiUrl);
     } catch (e) {
       // Non-fatal
-      appendLog('deploy-log', '警告: 网关启动失败，可能需要手动启动\n', 'stderr');
+      appendLog('deploy-log', 'Warning: Failed to start gateway. You may need to start it manually.\n', 'stderr');
     }
 
     window.electronAPI.removeCommandOutputListener();
@@ -1154,7 +1154,7 @@
     $('summary-profile').textContent = STATE.profileName;
     $('summary-provider').textContent = PROVIDER_INFO[STATE.provider]?.name || STATE.provider;
     $('summary-model').textContent = STATE.modelName;
-    $('summary-channel').textContent = STATE.channel === 'feishu' ? '飞书 (Feishu)' : 'Telegram';
+    $('summary-channel').textContent = STATE.channel === 'feishu' ? 'Feishu' : 'Telegram';
     $('summary-port').textContent = STATE.deployedPort;
 
     if (STATE.channel === 'feishu') {
