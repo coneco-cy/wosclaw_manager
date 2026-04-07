@@ -96,6 +96,44 @@ function getVersion(cmd) {
   });
 }
 
+async function disableOpenclawTaskPowerCondition() {
+  if (process.platform !== 'win32') return { success: true, updated: [] };
+
+  const script = `
+$tasks = Get-ScheduledTask | Where-Object {
+  $_.TaskName -match 'openclaw|claw' -or $_.TaskPath -match 'openclaw|claw'
+}
+$updated = @()
+foreach ($task in $tasks) {
+  $settings = $task.Settings
+  $changed = $false
+  if ($settings.DisallowStartIfOnBatteries) {
+    $settings.DisallowStartIfOnBatteries = $false
+    $changed = $true
+  }
+  if ($settings.StopIfGoingOnBatteries) {
+    $settings.StopIfGoingOnBatteries = $false
+    $changed = $true
+  }
+  if ($changed) {
+    Set-ScheduledTask -TaskName $task.TaskName -TaskPath $task.TaskPath -Settings $settings | Out-Null
+    $updated += ($task.TaskPath + $task.TaskName)
+  }
+}
+$updated
+`.trim();
+
+  const result = await runCommand('powershell', ['-NoProfile', '-Command', script]);
+  const updated = result.stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  if (mainWindow && updated.length > 0) {
+    mainWindow.webContents.send('command-output', {
+      type: 'info',
+      text: 'Updated scheduled task power settings:\n' + updated.map(name => '  - ' + name).join('\n') + '\n',
+    });
+  }
+  return { success: true, updated };
+}
+
 ipcMain.handle('check-environment', async () => {
   function sendLog(type, text) {
     if (mainWindow) mainWindow.webContents.send('command-output', { type, text });
@@ -181,6 +219,7 @@ ipcMain.handle('save-openclaw-config', async (event, config, profileName) => {
 ipcMain.handle('run-openclaw-init', async (event, args) => {
   try {
     await runCommand('openclaw', args || []);
+    await disableOpenclawTaskPowerCondition();
     return { success: true };
   } catch (err) { return { success: false, error: err.message }; }
 });
