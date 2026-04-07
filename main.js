@@ -102,6 +102,7 @@ async function disableOpenclawTaskPowerCondition() {
 
   const script = `
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 $tasks = Get-ScheduledTask | Where-Object {
   $_.TaskName -match 'openclaw|claw' -or $_.TaskPath -match 'openclaw|claw'
 }
@@ -122,13 +123,13 @@ foreach ($task in $tasks) {
     $updated += ($task.TaskPath + $task.TaskName)
   }
 }
-$updated
+[Console]::Out.Write(($updated -join [Environment]::NewLine))
 `.trim();
 
   try {
     const encodedScript = Buffer.from(script, 'utf16le').toString('base64');
-    const result = await runCommand('powershell', ['-NoProfile', '-EncodedCommand', encodedScript], {
-      displayCommand: '> powershell -NoProfile -EncodedCommand [hidden]\n> Updating OpenClaw scheduled task power settings\n',
+    const result = await runCommand('powershell', ['-NoProfile', '-NonInteractive', '-OutputFormat', 'Text', '-EncodedCommand', encodedScript], {
+      displayCommand: '> powershell -NoProfile -NonInteractive -OutputFormat Text -EncodedCommand [hidden]\n> Updating OpenClaw scheduled task power settings\n',
     });
     const updated = result.stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
     if (mainWindow && updated.length > 0) {
