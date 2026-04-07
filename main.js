@@ -50,7 +50,8 @@ function runCommand(cmd, args, options) {
   options = options || {};
   return new Promise((resolve, reject) => {
     // Print the command line before executing
-    if (mainWindow) mainWindow.webContents.send('command-output', { type: 'info', text: '> ' + [cmd, ...args].join(' ') + '\n' });
+    const commandText = options.displayCommand || ('> ' + [cmd, ...args].join(' ') + '\n');
+    if (mainWindow) mainWindow.webContents.send('command-output', { type: 'info', text: commandText });
 
     const proc = spawn(cmd, args, {
       shell: true,
@@ -126,7 +127,9 @@ $updated
 
   try {
     const encodedScript = Buffer.from(script, 'utf16le').toString('base64');
-    const result = await runCommand('powershell', ['-NoProfile', '-EncodedCommand', encodedScript]);
+    const result = await runCommand('powershell', ['-NoProfile', '-EncodedCommand', encodedScript], {
+      displayCommand: '> powershell -NoProfile -EncodedCommand [hidden]\n> Updating OpenClaw scheduled task power settings\n',
+    });
     const updated = result.stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
     if (mainWindow && updated.length > 0) {
       mainWindow.webContents.send('command-output', {
